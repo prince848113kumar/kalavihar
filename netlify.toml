@@ -1,0 +1,9 @@
+[build]
+  # This is the directory that Netlify will deploy (your static files)
+  publish = "." 
+
+[functions]
+  # This is the directory where your serverless functions are located
+  directory = "netlify/functions"
+  # You can optionally specify the Node.js version if needed
+  # node_bundler = "esbuild" # Uncomment this line if you face build issues related to Node.js modules or bundling.
