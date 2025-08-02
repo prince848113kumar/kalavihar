@@ -4,6 +4,10 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
+// --- NEW: Debugging line to check the environment variable ---
+console.log('DATABASE_URL from env:', process.env.DATABASE_URL ? 'URL exists' : 'URL is undefined/empty');
+// --- End of NEW ---
+
 // Database connection details from Netlify Environment Variables
 // Netlify automatically sets DATABASE_URL when you create Netlify DB
 const pool = new Pool({
