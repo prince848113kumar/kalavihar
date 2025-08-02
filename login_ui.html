@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalaVihar - Login & Register</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="login_style.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 text-gray-800">
+
+    <div class="auth-container w-full max-w-md h-[550px]">
+        <div class="auth-card-inner">
+            <!-- Login Form (Front of the card) -->
+            <div class="auth-card-front bg-white">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-2">Login to KalaVihar</h2>
+                <p class="text-gray-600 mb-8">Return to your creative world</p>
+                <form id="loginForm" class="space-y-6">
+                    <div>
+                        <label for="loginEmail" class="block text-left text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <input type="email" id="loginEmail" name="email" required placeholder="Enter your email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div>
+                        <label for="loginPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="loginPassword" name="password" required placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            Forgot your password?
+                        </a>
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
+                        Log In
+                    </button>
+                </form>
+                <div class="mt-8 text-sm text-gray-600">
+                    Don't have an account yet?
+                    <button id="showRegister" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-300 focus:outline-none">
+                        Register
+                    </button>
+                </div>
+            </div>
+
+            <!-- Register Form (Back of the card) -->
+            <div class="auth-card-back bg-white">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-2">Join KalaVihar</h2>
+                <p class="text-gray-600 mb-8">Bring your art to the world</p>
+                <form id="registerForm" class="space-y-6">
+                    <div>
+                        <label for="registerEmail" class="block text-left text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <input type="email" id="registerEmail" name="email" required placeholder="Enter your email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div>
+                        <label for="registerPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="registerPassword" name="password" required placeholder="Create a password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
+                        Register
+                    </button>
+                </form>
+                <div class="mt-8 text-sm text-gray-600">
+                    Already have an account?
+                    <button id="showLogin" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-300 focus:outline-none">
+                        Log In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const authContainer = document.querySelector('.auth-container');
+            const showRegisterBtn = document.getElementById('showRegister');
+            const showLoginBtn = document.getElementById('showLogin');
+            const registerForm = document.getElementById('registerForm');
+            const loginForm = document.getElementById('loginForm');
+
+            // Message display elements
+            const registrationMessage = document.getElementById('registrationMessage');
+            const loginMessage = document.getElementById('loginMessage');
+
+            // Function to display messages
+            function displayMessage(element, message, isSuccess) {
+                element.textContent = message;
+                element.className = `mt-4 text-center text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            }
+
+            // Handle initial form display based on URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('form') === 'register') {
+                authContainer.classList.add('flipped');
+            }
+
+            // Toggle between login and register forms
+            showRegisterBtn.addEventListener('click', () => {
+                authContainer.classList.add('flipped');
+                // Clear messages when flipping forms
+                displayMessage(registrationMessage, '', true);
+                displayMessage(loginMessage, '', true);
+            });
+
+            showLoginBtn.addEventListener('click', () => {
+                authContainer.classList.remove('flipped');
+                // Clear messages when flipping forms
+                displayMessage(registrationMessage, '', true);
+                displayMessage(loginMessage, '', true);
+            });
+
+            // Handle Registration Form Submission
+            registerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                // Client-side validation
+                if (password !== confirmPassword) {
+                    displayMessage(registrationMessage, "Passwords do not match!", false);
+                    return;
+                }
+                if (password.length < 6) { // Minimum password length
+                    displayMessage(registrationMessage, "Password must be at least 6 characters long.", false);
+                    return;
+                }
+                // Add more complex email/username validation if needed
+
+                try {
+                    // Send data to your Netlify Function for registration
+                    const response = await fetch('/.netlify/functions/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, email, password }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) { // Status codes 200-299 indicate success
+                        displayMessage(registrationMessage, result.message, true);
+                        registerForm.reset(); // Clear the form
+                        // Optionally, auto-flip to login form after successful registration
+                        setTimeout(() => authContainer.classList.remove('flipped'), 2000);
+                        setTimeout(() => displayMessage(registrationMessage, '', true), 3000); // Clear message after flip
+                    } else {
+                        displayMessage(registrationMessage, result.message || 'Registration failed due to an unknown error.', false);
+                    }
+                } catch (error) {
+                    console.error('Network or server error during registration:', error);
+                    displayMessage(registrationMessage, 'Could not connect to the server. Please try again.', false);
+                }
+            });
+
+            // Handle Login Form Submission
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+
+                // Client-side validation for login (optional but good)
+                if (!email || !password) {
+                    displayMessage(loginMessage, "Email and password are required for login.", false);
+                    return;
+                }
+
+                try {
+                    // Send data to your Netlify Function for login
+                    // NOTE: You'll need to create a separate Netlify Function for login (e.g., /.netlify/functions/login)
+                    const response = await fetch('/.netlify/functions/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email, password }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        displayMessage(loginMessage, result.message, true);
+                        // Redirect user to home page or dashboard upon successful login
+                        window.location.href = "/"; // Redirect to your home page
+                    } else {
+                        displayMessage(loginMessage, result.message || 'Login failed due to an unknown error.', false);
+                    }
+                } catch (error) {
+                    console.error('Network or server error during login:', error);
+                    displayMessage(loginMessage, 'Could not connect to the server. Please try again.', false);
+                }
+            });
+        });
+    </script>
+   
+</body>
+</html>

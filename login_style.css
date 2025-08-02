@@ -1,0 +1,67 @@
+/* Custom CSS for the Authentication UI */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f8f8;
+}
+
+/* Custom styling for the card container */
+.auth-container {
+    perspective: 1000px;
+}
+
+/* Styles for the inner card with transition effect */
+.auth-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+/* Style when the card is flipped (for registration form) */
+.auth-container.flipped .auth-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Common styles for both front and back of the card */
+.auth-card-front, .auth-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* For Safari */
+    backface-visibility: hidden;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Style for the back of the card (register form) */
+.auth-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Focus styles for input fields */
+input:focus {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+}
+
+/* Custom styling for the scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
