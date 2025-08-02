@@ -1,4 +1,4 @@
-// File path: netlify/functions/register.js
+// File path: ./.netlify/functions/register.js
 
 // Import necessary libraries
 const { Pool } = require('pg');
@@ -8,8 +8,13 @@ const bcrypt = require('bcryptjs');
 // Netlify automatically sets DATABASE_URL when you create Netlify DB
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
+    // Add these SSL configurations for Neon DB, which requires a secure connection.
     ssl: {
-        rejectUnauthorized: false // Required for Neon on some environments
+        // Neon DB requires an SSL connection. 'require' mode enforces it.
+        sslmode: 'require',
+        // In some serverless environments, this is needed to prevent certificate verification errors.
+        // It's a trade-off between security and connectivity, but often necessary for these setups.
+        rejectUnauthorized: false
     }
 });
 
