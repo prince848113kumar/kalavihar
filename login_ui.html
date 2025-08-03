@@ -38,6 +38,7 @@
                     <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
                         Log In
                     </button>
+                    <p id="loginMessage" class="mt-4 text-center text-sm"></p>
                 </form>
                 <div class="mt-8 text-sm text-gray-600">
                     Don't have an account yet?
@@ -70,6 +71,7 @@
                     <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
                         Register
                     </button>
+                    <p id="registrationMessage" class="mt-4 text-center text-sm"></p>
                 </form>
                 <div class="mt-8 text-sm text-gray-600">
                     Already have an account?
@@ -80,7 +82,8 @@
             </div>
         </div>
     </div>
-     <script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const authContainer = document.querySelector('.auth-container');
             const showRegisterBtn = document.getElementById('showRegister');
@@ -88,20 +91,17 @@
             const registerForm = document.getElementById('registerForm');
             const loginForm = document.getElementById('loginForm');
 
-            // Message display elements
-            // IMPORTANT: Ensure these elements exist in your HTML with these IDs
-            // For now, these are not in your provided HTML.
-            // You might want to add <p id="registrationMessage"></p> and <p id="loginMessage"></p> inside respective forms.
-            const registrationMessage = document.getElementById('registrationMessage'); 
+            // Message display elements - NOW THESE IDs MATCH THE HTML <p> TAGS
+            const registrationMessage = document.getElementById('registrationMessage');
             const loginMessage = document.getElementById('loginMessage');
 
             // Function to display messages
             function displayMessage(element, message, isSuccess) {
-                if (element) { // Added check to prevent error if element is null
+                if (element) { // Added check to prevent error if element is null (though now they exist)
                     element.textContent = message;
                     element.className = `mt-4 text-center text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
                 } else {
-                    console.warn(`Message element not found: ${message}`); // Log a warning if element is missing
+                    console.warn(`Message element with ID '${element ? element.id : 'unknown'}' not found: ${message}`); // More specific warning
                 }
             }
 
@@ -112,45 +112,49 @@
             }
 
             // Toggle between login and register forms
-            if (showRegisterBtn) { // Added null check
+            if (showRegisterBtn) {
                 showRegisterBtn.addEventListener('click', () => {
                     authContainer.classList.add('flipped');
                     // Clear messages when flipping forms
-                    displayMessage(registrationMessage, '', true);
-                    displayMessage(loginMessage, '', true);
+                    displayMessage(registrationMessage, '', true); // Clear with success class to avoid red text
+                    displayMessage(loginMessage, '', true); // Clear with success class
                 });
             }
 
-            if (showLoginBtn) { // Added null check
+            if (showLoginBtn) {
                 showLoginBtn.addEventListener('click', () => {
                     authContainer.classList.remove('flipped');
                     // Clear messages when flipping forms
-                    displayMessage(registrationMessage, '', true);
-                    displayMessage(loginMessage, '', true);
+                    displayMessage(registrationMessage, '', true); // Clear with success class
+                    displayMessage(loginMessage, '', true); // Clear with success class
                 });
             }
 
             // Handle Registration Form Submission
-            if (registerForm) { // Added null check
+            if (registerForm) {
                 registerForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
 
-                    // Now 'registerUsername' ID exists in HTML
+                    // Retrieve values using correct IDs from HTML
                     const username = document.getElementById('registerUsername').value;
                     const email = document.getElementById('registerEmail').value;
                     const password = document.getElementById('registerPassword').value;
-                    const confirmPassword = document.getElementById('confirmPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value; // Corrected ID check
 
-                    // Client-side validation
+                    // Client-side validation: Password matching
                     if (password !== confirmPassword) {
-                        displayMessage(registrationMessage, "Passwords do not match!", false);
-                        return;
+                        displayMessage(registrationMessage, "पासवर्ड मेल नहीं खाते! कृपया फिर से जांचें।", false);
+                        return; // Stop form submission
                     }
-                    if (password.length < 6) { // Minimum password length
-                        displayMessage(registrationMessage, "Password must be at least 6 characters long.", false);
-                        return;
+
+                    // Client-side validation: Minimum password length
+                    if (password.length < 6) { // Minimum password length, adjust as needed
+                        displayMessage(registrationMessage, "पासवर्ड कम से कम 6 अक्षर लंबा होना चाहिए।", false);
+                        return; // Stop form submission
                     }
-                    // Add more complex email/username validation if needed
+                    
+                    // Clear previous message if validation passes
+                    displayMessage(registrationMessage, '', true);
 
                     try {
                         // Send data to your Netlify Function for registration
@@ -165,23 +169,25 @@
                         const result = await response.json();
 
                         if (response.ok) { // Status codes 200-299 indicate success
-                            displayMessage(registrationMessage, result.message, true);
+                            displayMessage(registrationMessage, result.message || 'पंजीकरण सफल रहा!', true); // Default success message
                             registerForm.reset(); // Clear the form
                             // Optionally, auto-flip to login form after successful registration
-                            setTimeout(() => authContainer.classList.remove('flipped'), 2000);
+                            setTimeout(() => authContainer.classList.remove('flipped'), 2000); // Flip back after 2 seconds
                             setTimeout(() => displayMessage(registrationMessage, '', true), 3000); // Clear message after flip
                         } else {
-                            displayMessage(registrationMessage, result.message || 'Registration failed due to an unknown error.', false);
+                            // Handle server-side errors (e.g., user already exists, validation errors from server)
+                            const errorMessage = result.message || 'पंजीकरण विफल रहा, अज्ञात त्रुटि।';
+                            displayMessage(registrationMessage, errorMessage, false);
                         }
                     } catch (error) {
-                        console.error('Network or server error during registration:', error);
-                        displayMessage(registrationMessage, 'Could not connect to the server. Please try again.', false);
+                        console.error('नेटवर्क या सर्वर त्रुटि पंजीकरण के दौरान:', error);
+                        displayMessage(registrationMessage, 'सर्वर से कनेक्ट नहीं हो सका। कृपया फिर से प्रयास करें।', false);
                     }
                 });
             }
 
-            // Handle Login Form Submission
-            if (loginForm) { // Added null check
+            // Handle Login Form Submission (Login Function is not implemented yet)
+            if (loginForm) {
                 loginForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
 
@@ -190,14 +196,16 @@
 
                     // Client-side validation for login (optional but good)
                     if (!email || !password) {
-                        displayMessage(loginMessage, "Email and password are required for login.", false);
+                        displayMessage(loginMessage, "ईमेल और पासवर्ड लॉगिन के लिए आवश्यक हैं।", false);
                         return;
                     }
 
+                    displayMessage(loginMessage, '', true); // Clear previous message
+
                     try {
-                        // Send data to your Netlify Function for login
                         // NOTE: You'll need to create a separate Netlify Function for login (e.g., /.netlify/functions/login)
-                        const response = await fetch('/.netlify/functions/login', {
+                        // This fetch call will likely result in a 404 until that function is deployed.
+                        const response = await fetch('/.netlify/functions/login', { 
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -208,20 +216,20 @@
                         const result = await response.json();
 
                         if (response.ok) {
-                            displayMessage(loginMessage, result.message, true);
+                            displayMessage(loginMessage, result.message || 'लॉगिन सफल रहा!', true);
                             // Redirect user to home page or dashboard upon successful login
                             window.location.href = "/"; // Redirect to your home page
                         } else {
-                            displayMessage(loginMessage, result.message || 'Login failed due to an unknown error.', false);
+                            const errorMessage = result.message || 'लॉगिन विफल रहा, अज्ञात त्रुटि।';
+                            displayMessage(loginMessage, errorMessage, false);
                         }
                     } catch (error) {
-                        console.error('Network or server error during login:', error);
-                        displayMessage(loginMessage, 'Could not connect to the server. Please try again.', false);
+                        console.error('नेटवर्क या सर्वर त्रुटि लॉगिन के दौरान:', error);
+                        displayMessage(loginMessage, 'सर्वर से कनेक्ट नहीं हो सका। कृपया फिर से प्रयास करें।', false);
                     }
                 });
             }
         });
     </script>
-    
 </body>
 </html>
