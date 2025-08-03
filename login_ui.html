@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 text-gray-800">
 
-    <div class="auth-container w-full max-w-md h-[650px]">
+    <div class="auth-container w-full max-w-md h-[750px]"> 
         <div class="auth-card-inner">
             <div class="auth-card-front bg-white">
                 <h2 class="text-3xl font-bold text-indigo-700 mb-2">Login to KalaVihar</h2>
@@ -91,17 +91,17 @@
             const registerForm = document.getElementById('registerForm');
             const loginForm = document.getElementById('loginForm');
 
-            // Message display elements - NOW THESE IDs MATCH THE HTML <p> TAGS
+            // Message display elements
             const registrationMessage = document.getElementById('registrationMessage');
             const loginMessage = document.getElementById('loginMessage');
 
             // Function to display messages
             function displayMessage(element, message, isSuccess) {
-                if (element) { // Added check to prevent error if element is null (though now they exist)
+                if (element) {
                     element.textContent = message;
                     element.className = `mt-4 text-center text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
                 } else {
-                    console.warn(`Message element with ID '${element ? element.id : 'unknown'}' not found: ${message}`); // More specific warning
+                    console.warn(`Message element with ID '${element ? element.id : 'unknown'}' not found: ${message}`);
                 }
             }
 
@@ -115,7 +115,6 @@
             if (showRegisterBtn) {
                 showRegisterBtn.addEventListener('click', () => {
                     authContainer.classList.add('flipped');
-                    // Clear messages when flipping forms
                     displayMessage(registrationMessage, '', true); // Clear with success class to avoid red text
                     displayMessage(loginMessage, '', true); // Clear with success class
                 });
@@ -124,7 +123,6 @@
             if (showLoginBtn) {
                 showLoginBtn.addEventListener('click', () => {
                     authContainer.classList.remove('flipped');
-                    // Clear messages when flipping forms
                     displayMessage(registrationMessage, '', true); // Clear with success class
                     displayMessage(loginMessage, '', true); // Clear with success class
                 });
@@ -139,17 +137,17 @@
                     const username = document.getElementById('registerUsername').value;
                     const email = document.getElementById('registerEmail').value;
                     const password = document.getElementById('registerPassword').value;
-                    const confirmPassword = document.getElementById('confirmPassword').value; // Corrected ID check
+                    const confirmPassword = document.getElementById('confirmPassword').value;
 
                     // Client-side validation: Password matching
                     if (password !== confirmPassword) {
-                        displayMessage(registrationMessage, "पासवर्ड मेल नहीं खाते! कृपया फिर से जांचें।", false);
+                        displayMessage(registrationMessage, "Passwords do not match! Please check again.", false);
                         return; // Stop form submission
                     }
 
                     // Client-side validation: Minimum password length
                     if (password.length < 6) { // Minimum password length, adjust as needed
-                        displayMessage(registrationMessage, "पासवर्ड कम से कम 6 अक्षर लंबा होना चाहिए।", false);
+                        displayMessage(registrationMessage, "Password must be at least 6 characters long.", false);
                         return; // Stop form submission
                     }
                     
@@ -169,24 +167,38 @@
                         const result = await response.json();
 
                         if (response.ok) { // Status codes 200-299 indicate success
-                            displayMessage(registrationMessage, result.message || 'पंजीकरण सफल रहा!', true); // Default success message
+                            displayMessage(registrationMessage, result.message || 'Registration successful!', true); // Default success message
                             registerForm.reset(); // Clear the form
-                            // Optionally, auto-flip to login form after successful registration
-                            setTimeout(() => authContainer.classList.remove('flipped'), 2000); // Flip back after 2 seconds
-                            setTimeout(() => displayMessage(registrationMessage, '', true), 3000); // Clear message after flip
+                            
+                            // Store token and user info on successful registration as well
+                            if (result.token && result.user) {
+                                localStorage.setItem('authToken', result.token);
+                                localStorage.setItem('currentUser', JSON.stringify(result.user));
+                            }
+
+                            // Optional: auto-flip to login form after successful registration
+                            setTimeout(() => authContainer.classList.remove('flipped'), 2000); 
+                            setTimeout(() => {
+                                displayMessage(registrationMessage, '', true); // Clear message after flip
+                                // Redirect to home page if user is now logged in via registration
+                                if (localStorage.getItem('authToken')) {
+                                    window.location.href = "/"; 
+                                }
+                            }, 3000); 
+
                         } else {
                             // Handle server-side errors (e.g., user already exists, validation errors from server)
-                            const errorMessage = result.message || 'पंजीकरण विफल रहा, अज्ञात त्रुटि।';
+                            const errorMessage = result.message || 'Registration failed due to an unknown error.';
                             displayMessage(registrationMessage, errorMessage, false);
                         }
                     } catch (error) {
-                        console.error('नेटवर्क या सर्वर त्रुटि पंजीकरण के दौरान:', error);
-                        displayMessage(registrationMessage, 'सर्वर से कनेक्ट नहीं हो सका। कृपया फिर से प्रयास करें।', false);
+                        console.error('Network or server error during registration:', error);
+                        displayMessage(registrationMessage, 'Could not connect to the server. Please try again.', false);
                     }
                 });
             }
 
-            // Handle Login Form Submission (Login Function is not implemented yet)
+            // Handle Login Form Submission
             if (loginForm) {
                 loginForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
@@ -194,17 +206,15 @@
                     const email = document.getElementById('loginEmail').value;
                     const password = document.getElementById('loginPassword').value;
 
-                    // Client-side validation for login (optional but good)
+                    // Client-side validation for login
                     if (!email || !password) {
-                        displayMessage(loginMessage, "ईमेल और पासवर्ड लॉगिन के लिए आवश्यक हैं।", false);
+                        displayMessage(loginMessage, "Email and password are required for login.", false);
                         return;
                     }
 
                     displayMessage(loginMessage, '', true); // Clear previous message
 
                     try {
-                        // NOTE: You'll need to create a separate Netlify Function for login (e.g., /.netlify/functions/login)
-                        // This fetch call will likely result in a 404 until that function is deployed.
                         const response = await fetch('/.netlify/functions/login', { 
                             method: 'POST',
                             headers: {
@@ -216,16 +226,26 @@
                         const result = await response.json();
 
                         if (response.ok) {
-                            displayMessage(loginMessage, result.message || 'लॉगिन सफल रहा!', true);
+                            displayMessage(loginMessage, result.message || 'Login successful!', true);
+                            
+                            // Store the token and user info on successful login
+                            localStorage.setItem('authToken', result.token);
+                            localStorage.setItem('currentUser', JSON.stringify(result.user));
+
+                            loginForm.reset(); // Clear the form
+
                             // Redirect user to home page or dashboard upon successful login
-                            window.location.href = "/"; // Redirect to your home page
+                            setTimeout(() => {
+                                window.location.href = "/"; // Redirect to your home page
+                            }, 1500); // Redirect after 1.5 seconds
+
                         } else {
-                            const errorMessage = result.message || 'लॉगिन विफल रहा, अज्ञात त्रुटि।';
+                            const errorMessage = result.message || 'Login failed due to an unknown error.';
                             displayMessage(loginMessage, errorMessage, false);
                         }
                     } catch (error) {
-                        console.error('नेटवर्क या सर्वर त्रुटि लॉगिन के दौरान:', error);
-                        displayMessage(loginMessage, 'सर्वर से कनेक्ट नहीं हो सका। कृपया फिर से प्रयास करें।', false);
+                        console.error('Network or server error during login:', error);
+                        displayMessage(loginMessage, 'Could not connect to the server. Please try again.', false);
                     }
                 });
             }

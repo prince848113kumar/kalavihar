@@ -1,8 +1,14 @@
-// File path: netlify/functions/login.js
+// File path: ./.netlify/functions/login.js
 
 // Import necessary libraries
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken'); // NEW: jsonwebtoken को इंपोर्ट करें
+
+// NEW: JWT के लिए एक सीक्रेट कुंजी (Secret Key) डिफाइन करें।
+// यह एक मजबूत, रैंडम स्ट्रिंग होनी चाहिए।
+// प्रोडक्शन में, इसे Netlify Environment Variables से प्राप्त करें (जैसे process.env.JWT_SECRET)।
+const JWT_SECRET = process.env.JWT_SECRET || 'your_very_secret_jwt_key_please_change_this_for_production';
 
 // Database connection details from Netlify Environment Variables
 // Netlify automatically sets DATABASE_URL when you create Netlify DB
@@ -71,18 +77,24 @@ exports.handler = async (event, context) => {
                 };
             }
 
-            // 8. If login is successful
-            // In a real application, you would typically generate and return a JSON Web Token (JWT)
-            // or set up a session here for authentication across pages.
-            // For this example, we'll just return a success message and basic user info.
+            // 8. If login is successful, generate and return a JWT
+            const tokenPayload = {
+                userId: user.id,
+                username: user.username,
+                email: user.email
+            };
+
+            const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '1h' });
+
             return {
                 statusCode: 200, // OK
                 body: JSON.stringify({
                     message: 'Login successful!',
-                    user: {
+                    token: token, // NEW: Send the JWT token
+                    user: { // NEW: Send user's basic info for client-side use
                         id: user.id,
                         username: user.username,
-                        email: email
+                        email: user.email
                     }
                 }),
             };
@@ -99,7 +111,7 @@ exports.handler = async (event, context) => {
         // Return a generic error message to the client
         return {
             statusCode: 500, // Internal Server Error
-            body: JSON.stringify({ message: 'An unexpected error occurred.', error: error.message }),
+            body: JSON.stringify({ message: 'An unexpected error occurred during login.', error: error.message }),
         };
     }
 };

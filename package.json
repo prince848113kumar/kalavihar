@@ -16,8 +16,9 @@
     "drizzle-kit": "^0.31.4"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "drizzle-orm": "^0.44.4",
-    "pg": "^8.x.x",         
-    "bcryptjs": "^2.4.3"    
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.x.x"
   }
 }
