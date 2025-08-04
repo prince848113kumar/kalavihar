@@ -91,11 +91,9 @@
             const registerForm = document.getElementById('registerForm');
             const loginForm = document.getElementById('loginForm');
 
-            // Message display elements
             const registrationMessage = document.getElementById('registrationMessage');
             const loginMessage = document.getElementById('loginMessage');
 
-            // Function to display messages
             function displayMessage(element, message, isSuccess) {
                 if (element) {
                     element.textContent = message;
@@ -105,57 +103,49 @@
                 }
             }
 
-            // Handle initial form display based on URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('form') === 'register') {
                 authContainer.classList.add('flipped');
             }
 
-            // Toggle between login and register forms
             if (showRegisterBtn) {
                 showRegisterBtn.addEventListener('click', () => {
                     authContainer.classList.add('flipped');
-                    displayMessage(registrationMessage, '', true); // Clear with success class to avoid red text
-                    displayMessage(loginMessage, '', true); // Clear with success class
+                    displayMessage(registrationMessage, '', true); 
+                    displayMessage(loginMessage, '', true); 
                 });
             }
 
             if (showLoginBtn) {
                 showLoginBtn.addEventListener('click', () => {
                     authContainer.classList.remove('flipped');
-                    displayMessage(registrationMessage, '', true); // Clear with success class
-                    displayMessage(loginMessage, '', true); // Clear with success class
+                    displayMessage(registrationMessage, '', true); 
+                    displayMessage(loginMessage, '', true); 
                 });
             }
 
-            // Handle Registration Form Submission
             if (registerForm) {
                 registerForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
 
-                    // Retrieve values using correct IDs from HTML
                     const username = document.getElementById('registerUsername').value;
                     const email = document.getElementById('registerEmail').value;
                     const password = document.getElementById('registerPassword').value;
                     const confirmPassword = document.getElementById('confirmPassword').value;
 
-                    // Client-side validation: Password matching
                     if (password !== confirmPassword) {
                         displayMessage(registrationMessage, "Passwords do not match! Please check again.", false);
-                        return; // Stop form submission
+                        return; 
                     }
 
-                    // Client-side validation: Minimum password length
-                    if (password.length < 6) { // Minimum password length, adjust as needed
+                    if (password.length < 6) { 
                         displayMessage(registrationMessage, "Password must be at least 6 characters long.", false);
-                        return; // Stop form submission
+                        return; 
                     }
                     
-                    // Clear previous message if validation passes
                     displayMessage(registrationMessage, '', true);
 
                     try {
-                        // Send data to your Netlify Function for registration
                         const response = await fetch('/.netlify/functions/register', {
                             method: 'POST',
                             headers: {
@@ -166,28 +156,22 @@
 
                         const result = await response.json();
 
-                        if (response.ok) { // Status codes 200-299 indicate success
-                            displayMessage(registrationMessage, result.message || 'Registration successful!', true); // Default success message
-                            registerForm.reset(); // Clear the form
+                        if (response.ok) {
+                            displayMessage(registrationMessage, result.message || 'Registration successful!', true);
                             
-                            // Store token and user info on successful registration as well
-                            if (result.token && result.user) {
-                                localStorage.setItem('authToken', result.token);
-                                localStorage.setItem('currentUser', JSON.stringify(result.user));
-                            }
+                            localStorage.setItem('authToken', result.token);
+                            localStorage.setItem('currentUser', JSON.stringify(result.user));
 
-                            // Optional: auto-flip to login form after successful registration
+                            registerForm.reset(); 
                             setTimeout(() => authContainer.classList.remove('flipped'), 2000); 
                             setTimeout(() => {
-                                displayMessage(registrationMessage, '', true); // Clear message after flip
-                                // Redirect to home page if user is now logged in via registration
+                                displayMessage(registrationMessage, '', true);
                                 if (localStorage.getItem('authToken')) {
                                     window.location.href = "/"; 
                                 }
                             }, 3000); 
 
                         } else {
-                            // Handle server-side errors (e.g., user already exists, validation errors from server)
                             const errorMessage = result.message || 'Registration failed due to an unknown error.';
                             displayMessage(registrationMessage, errorMessage, false);
                         }
@@ -198,7 +182,6 @@
                 });
             }
 
-            // Handle Login Form Submission
             if (loginForm) {
                 loginForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
@@ -206,13 +189,12 @@
                     const email = document.getElementById('loginEmail').value;
                     const password = document.getElementById('loginPassword').value;
 
-                    // Client-side validation for login
                     if (!email || !password) {
                         displayMessage(loginMessage, "Email and password are required for login.", false);
                         return;
                     }
 
-                    displayMessage(loginMessage, '', true); // Clear previous message
+                    displayMessage(loginMessage, '', true);
 
                     try {
                         const response = await fetch('/.netlify/functions/login', { 
@@ -228,16 +210,14 @@
                         if (response.ok) {
                             displayMessage(loginMessage, result.message || 'Login successful!', true);
                             
-                            // Store the token and user info on successful login
                             localStorage.setItem('authToken', result.token);
                             localStorage.setItem('currentUser', JSON.stringify(result.user));
 
-                            loginForm.reset(); // Clear the form
+                            loginForm.reset(); 
 
-                            // Redirect user to home page or dashboard upon successful login
                             setTimeout(() => {
-                                window.location.href = "/"; // Redirect to your home page
-                            }, 1500); // Redirect after 1.5 seconds
+                                window.location.href = "/"; 
+                            }, 1500); 
 
                         } else {
                             const errorMessage = result.message || 'Login failed due to an unknown error.';
