@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalaVihar - Shopping Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="text-gray-800">
+
+    <main class="py-16 px-6 md:px-10 min-h-screen">
+        <div class="container mx-auto bg-white rounded-xl shadow-lg p-8 md:p-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-center mb-10 text-indigo-800">Your Shopping Cart</h1>
+
+            <div id="cart-items-container" class="space-y-6">
+                <p class="text-center text-gray-500">Your cart is empty.</p>
+            </div>
+
+            <div id="cart-summary" class="mt-8 pt-6 border-t border-gray-300 flex justify-between items-center">
+                <span class="text-xl font-bold">Total:</span>
+                <span id="cart-total" class="text-2xl font-bold text-indigo-700">₹0</span>
+            </div>
+
+            <a href="/checkout.html" class="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium mt-6 block text-center">Proceed to Checkout</a>
+        </div>
+    </main>
+
+    <script src="cart.js"></script>
+    <script>
+        // Paste the updateAuthUI() function from index.html here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Call updateAuthUI to load header
+            updateAuthUI();
+
+            // Call renderCartItems to load cart content
+            renderCartItems();
+        });
+    </script>
+</body>
+</html>
