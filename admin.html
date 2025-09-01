@@ -40,7 +40,7 @@
 
         <main class="flex-1 p-8 overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                <h1 id="main-title" class="text-3xl font-bold text-gray-800">Dashboard</h1>
                 <div class="flex items-center space-x-4">
                     <span id="admin-name" class="text-gray-600">Admin</span>
                     <button id="logout-button" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
@@ -85,8 +85,59 @@
             </section>
 
             <section id="products-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Product Management</h2>
-                <p>Here you will be able to add, edit, and delete products.</p>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700">Product Management</h2>
+                    <button id="add-product-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300">
+                        <i class="fas fa-plus mr-2"></i> Add Product
+                    </button>
+                </div>
+
+                <div id="product-form-container" class="mb-6 hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Add/Edit Product</h3>
+                    <form id="product-form" class="space-y-4">
+                        <div>
+                            <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                            <input type="text" id="product-name" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-price" class="block text-sm font-medium text-gray-700">Price (₹)</label>
+                            <input type="number" id="product-price" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-image" class="block text-sm font-medium text-gray-700">Image URL</label>
+                            <input type="url" id="product-image" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div>
+                            <label for="product-description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="product-description" rows="3" class="mt-1 w-full p-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300">
+                                Save Product
+                            </button>
+                            <button type="button" id="cancel-edit-btn" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition duration-300">
+                                Cancel
+                            </button>
+                        </div>
+                        <p id="product-message" class="mt-2 text-sm"></p>
+                    </form>
+                </div>
+                
+                <div id="product-list-container">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border-collapse">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Product Name</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Price</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <section id="orders-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
@@ -125,9 +176,17 @@
     </div>
 
     <script>
+        // Fake data to simulate a backend API
+        let products = [
+            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, image: 'Madhubani_panting.jpg', description: 'A beautiful handmade Madhubani painting of a peacock.' },
+            { id: 2, name: 'Handmade Sikki Basket', price: 750, image: 'sikki _caraft.jpg', description: 'A traditional basket woven from Sikki grass.' }
+        ];
+        let editingProductId = null;
+
+        // Dashboard Data
         const fetchAdminData = async () => {
             const fakeData = {
-                totalProducts: 250,
+                totalProducts: products.length,
                 pendingOrders: 27,
                 totalUsers: 650,
                 recentOrders: [
@@ -175,6 +234,89 @@
             displayAdminData(data);
         };
 
+        // Products Section
+        const renderProducts = () => {
+            const productTableBody = document.getElementById('product-table-body');
+            if (productTableBody) {
+                productTableBody.innerHTML = '';
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b';
+                    row.innerHTML = `
+                        <td class="py-2 px-4 text-sm text-gray-800">${product.name}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800">₹${product.price}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800">
+                            <button data-id="${product.id}" class="edit-btn text-indigo-600 hover:text-indigo-800 mr-2">Edit</button>
+                            <button data-id="${product.id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button>
+                        </td>
+                    `;
+                    productTableBody.appendChild(row);
+                });
+
+                // Add event listeners for edit and delete buttons
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.dataset.id);
+                        editProduct(id);
+                    });
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.dataset.id);
+                        deleteProduct(id);
+                    });
+                });
+            }
+        };
+
+        const editProduct = (id) => {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                editingProductId = id;
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-image').value = product.image;
+                document.getElementById('product-description').value = product.description;
+                document.getElementById('product-form-container').classList.remove('hidden');
+                document.getElementById('product-list-container').classList.add('hidden');
+            }
+        };
+
+        const deleteProduct = (id) => {
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+            // Update dashboard product count
+            loadAdminDashboard();
+        };
+        
+        const saveProduct = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('product-name').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const image = document.getElementById('product-image').value;
+            const description = document.getElementById('product-description').value;
+            
+            if (editingProductId !== null) {
+                const productIndex = products.findIndex(p => p.id === editingProductId);
+                if (productIndex !== -1) {
+                    products[productIndex] = { id: editingProductId, name, price, image, description };
+                }
+            } else {
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({ id: newId, name, price, image, description });
+            }
+            
+            editingProductId = null;
+            document.getElementById('product-form').reset();
+            document.getElementById('product-form-container').classList.add('hidden');
+            document.getElementById('product-list-container').classList.remove('hidden');
+            
+            renderProducts();
+            loadAdminDashboard();
+        };
+
+        // UI Logic
         const checkAdminStatus = () => {
             const authToken = localStorage.getItem('authToken');
             const currentUser = localStorage.getItem('currentUser');
@@ -203,7 +345,34 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', checkAdminStatus);
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminStatus();
+            renderProducts();
+            
+            const addProductBtn = document.getElementById('add-product-btn');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const productForm = document.getElementById('product-form');
+            
+            if (addProductBtn) {
+                addProductBtn.addEventListener('click', () => {
+                    editingProductId = null;
+                    document.getElementById('product-form').reset();
+                    document.getElementById('product-form-container').classList.remove('hidden');
+                    document.getElementById('product-list-container').classList.add('hidden');
+                });
+            }
+            if (cancelEditBtn) {
+                cancelEditBtn.addEventListener('click', () => {
+                    editingProductId = null;
+                    document.getElementById('product-form').reset();
+                    document.getElementById('product-form-container').classList.add('hidden');
+                    document.getElementById('product-list-container').classList.remove('hidden');
+                });
+            }
+            if (productForm) {
+                productForm.addEventListener('submit', saveProduct);
+            }
+        });
         
         const logoutButton = document.getElementById('logout-button');
         if(logoutButton) {
@@ -223,6 +392,7 @@
             '#analytics-section': document.getElementById('analytics-section'),
             '#add-admin-section': document.getElementById('add-admin-section')
         };
+        const mainTitle = document.getElementById('main-title');
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -233,6 +403,7 @@
                         sections[id].classList.add('hidden');
                     }
                     sections[targetId].classList.remove('hidden');
+                    mainTitle.textContent = e.target.textContent.trim();
                 }
             });
         });
