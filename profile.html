@@ -174,10 +174,11 @@
             
             usernameInput.value = user.username || '';
             emailInput.value = user.email || '';
-            mobileInput.value = user.mobile || ''; // Set to empty string
-            addressInput.value = user.address || ''; // Set to empty string
             
-            // Set 'Not provided' as placeholder text
+            // Set values and placeholders for mobile and address
+            mobileInput.value = user.mobile || '';
+            addressInput.value = user.address || '';
+            
             if (!user.mobile) {
                 mobileInput.placeholder = 'Not provided';
             }
@@ -190,36 +191,47 @@
         function toggleEditMode() {
             const inputs = document.querySelectorAll('#profile-details-container input, #profile-details-container textarea');
             const editBtn = document.getElementById('editProfileBtn');
-
             const isEditable = !inputs[0].hasAttribute('readonly');
 
-            inputs.forEach(input => {
-                if (isEditable) {
+            if (isEditable) {
+                // Save logic when button text is "Save Profile"
+                const updatedUser = {
+                    username: document.getElementById('profileUsername').value,
+                    email: document.getElementById('profileEmail').value,
+                    mobile: document.getElementById('profileMobile').value,
+                    address: document.getElementById('profileAddress').value
+                };
+
+                // Update the user data in local storage
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                
+                editBtn.textContent = 'Edit Profile';
+                document.getElementById('profileMessage').textContent = 'Profile saved successfully!';
+                
+                inputs.forEach(input => {
                     input.setAttribute('readonly', true);
                     input.classList.remove('bg-white');
                     input.classList.add('bg-gray-50');
                     if (input.value === '') {
                         input.placeholder = 'Not provided';
                     }
-                } else {
+                });
+                
+                setTimeout(() => document.getElementById('profileMessage').textContent = '', 3000);
+
+            } else {
+                // Edit mode logic when button text is "Edit Profile"
+                editBtn.textContent = 'Save Profile';
+                document.getElementById('profileMessage').textContent = 'You can now edit your details.';
+                
+                inputs.forEach(input => {
                     input.removeAttribute('readonly');
                     input.classList.remove('bg-gray-50');
                     input.classList.add('bg-white');
-                    if (input.value === '' && input.placeholder === 'Not provided') {
-                        input.placeholder = '';
+                    if (input.placeholder === 'Not provided') {
+                        input.value = ''; // Clear the placeholder text
                     }
-                }
-            });
-
-            if (isEditable) {
-                editBtn.textContent = 'Edit Profile';
-                // Here you would add logic to save the updated profile to your backend
-                // For this example, we'll just show a message.
-                document.getElementById('profileMessage').textContent = 'Profile saved successfully!';
-                setTimeout(() => document.getElementById('profileMessage').textContent = '', 3000);
-            } else {
-                editBtn.textContent = 'Save Profile';
-                document.getElementById('profileMessage').textContent = 'You can now edit your details.';
+                });
             }
         }
 
