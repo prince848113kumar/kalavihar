@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KalaVihar - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="flex h-screen">
+        <aside class="w-64 bg-gray-800 text-white p-6 space-y-6">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold text-indigo-400">KalaVihar</span>
+            </div>
+            <nav>
+                <a href="#dashboard-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                </a>
+                <a href="#products-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-box mr-2"></i> Products
+                </a>
+                <a href="#orders-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-shopping-bag mr-2"></i> Orders
+                </a>
+                <a href="#users-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-users mr-2"></i> Users
+                </a>
+                <a href="#analytics-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-chart-line mr-2"></i> Analytics
+                </a>
+                <a id="add-admin-link" href="#add-admin-section" class="hidden nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
+                    <i class="fas fa-user-plus mr-2"></i> Add Admin
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="admin-name" class="text-gray-600">Admin</span>
+                    <button id="logout-button" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <section id="dashboard-section">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Total Products</h2>
+                        <p id="total-products" class="text-4xl font-bold text-indigo-600">...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Pending Orders</h2>
+                        <p id="pending-orders" class="text-4xl font-bold text-red-600">...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Total Users</h2>
+                        <p id="total-users" class="text-4xl font-bold text-green-600">...</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Recent Orders</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-200">
+                                <tr>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Order ID</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Customer</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Amount</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="products-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Product Management</h2>
+                <p>Here you will be able to add, edit, and delete products.</p>
+            </section>
+
+            <section id="orders-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Order Management</h2>
+                <p>Here you will see all customer orders and their status.</p>
+            </section>
+
+            <section id="users-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">User Management</h2>
+                <p>Here you can manage all registered users on the platform.</p>
+            </section>
+
+            <section id="analytics-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Analytics</h2>
+                <p>Here you can view website analytics and reports.</p>
+            </section>
+
+            <section id="add-admin-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Add New Admin</h2>
+                <form id="add-admin-form" class="space-y-4">
+                    <div>
+                        <label for="new-admin-email" class="block text-sm font-medium text-gray-700">Admin Email</label>
+                        <input type="email" id="new-admin-email" name="email" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label for="new-admin-password" class="block text-sm font-medium text-gray-700">Temporary Password</label>
+                        <input type="password" id="new-admin-password" name="password" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300">
+                        Create Admin
+                    </button>
+                    <p id="admin-message" class="mt-2 text-sm"></p>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Faking a fetch from a backend API
+        const fetchAdminData = async () => {
+            // This is where you would normally make an API call to get real data.
+            const fakeData = {
+                totalProducts: 250,
+                pendingOrders: 27,
+                totalUsers: 650,
+                recentOrders: [
+                    { id: '#KV89013', customer: 'Riya Singh', amount: '₹1,500', status: 'Processing' },
+                    { id: '#KV89012', customer: 'Deepak Kumar', amount: '₹2,500', status: 'Pending' },
+                    { id: '#KV89011', customer: 'Pooja Sharma', amount: '₹1,200', status: 'Shipped' },
+                    { id: '#KV89010', customer: 'Ankit Jain', amount: '₹3,000', status: 'Shipped' }
+                ]
+            };
+            return fakeData;
+        };
+
+        const displayAdminData = (data) => {
+            document.getElementById('total-products').textContent = data.totalProducts;
+            document.getElementById('pending-orders').textContent = data.pendingOrders;
+            document.getElementById('total-users').textContent = data.totalUsers;
+
+            const recentOrdersTableBody = document.getElementById('recent-orders-body');
+            if (recentOrdersTableBody) {
+                recentOrdersTableBody.innerHTML = ''; // Clear existing data
+                data.recentOrders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.className = 'border-b';
+                    row.innerHTML = `
+                        <td class="py-2 px-4 text-sm text-gray-800">${order.id}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800">${order.customer}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800">${order.amount}</td>
+                        <td class="py-2 px-4 text-sm">${order.status}</td>
+                    `;
+                    const statusCell = row.querySelector('td:last-child');
+                    if (order.status === 'Pending') {
+                        statusCell.classList.add('text-red-600');
+                    } else if (order.status === 'Processing') {
+                        statusCell.classList.add('text-yellow-600');
+                    } else if (order.status === 'Shipped') {
+                        statusCell.classList.add('text-green-600');
+                    }
+                    recentOrdersTableBody.appendChild(row);
+                });
+            }
+        };
+
+        const loadAdminDashboard = async () => {
+            const data = await fetchAdminData();
+            displayAdminData(data);
+        };
+
+        const checkAdminStatus = () => {
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            let isAdmin = false;
+            let loggedInEmail = '';
+            
+            if (authToken && currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    isAdmin = user.isAdmin === true;
+                    loggedInEmail = user.email;
+                    document.getElementById('admin-name').textContent = `नमस्ते, ${user.username}`;
+                } catch (e) {
+                    console.error("Error parsing user data:", e);
+                }
+            }
+
+            if (isAdmin) {
+                loadAdminDashboard();
+                if (loggedInEmail === 'kundan848113tiwari@gmail.com') {
+                    document.getElementById('add-admin-link').classList.remove('hidden');
+                }
+            } else {
+                alert('Access Denied. Please log in as an administrator.');
+                window.location.href = '/login_ui.html'; 
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', checkAdminStatus);
+        
+        // Logout button functionality
+        const logoutButton = document.getElementById('logout-button');
+        if(logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('currentUser');
+                window.location.href = '/login_ui.html';
+            });
+        }
+
+        // Navigation and Section Toggling
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = {
+            '#dashboard-section': document.getElementById('dashboard-section'),
+            '#products-section': document.getElementById('products-section'),
+            '#orders-section': document.getElementById('orders-section'),
+            '#users-section': document.getElementById('users-section'),
+            '#analytics-section': document.getElementById('analytics-section'),
+            '#add-admin-section': document.getElementById('add-admin-section')
+        };
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetId = e.target.getAttribute('href');
+                if (sections[targetId]) {
+                    e.preventDefault();
+                    for (const id in sections) {
+                        sections[id].classList.add('hidden');
+                    }
+                    sections[targetId].classList.remove('hidden');
+                }
+            });
+        });
+
+        // Add Admin Form Submission (Placeholder)
+        const addAdminForm = document.getElementById('add-admin-form');
+        const adminMessage = document.getElementById('admin-message');
+
+        if (addAdminForm) {
+            addAdminForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newAdminEmail = document.getElementById('new-admin-email').value;
+                const newAdminPassword = document.getElementById('new-admin-password').value;
+
+                console.log(`Creating new admin with email: ${newAdminEmail} and password: ${newAdminPassword}`);
+
+                adminMessage.textContent = 'New admin account created successfully (placeholder)!';
+                adminMessage.classList.remove('text-red-600');
+                adminMessage.classList.add('text-green-600');
+                addAdminForm.reset();
+            });
+        }
+    </script>
+</body>
+</html>

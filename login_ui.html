@@ -160,7 +160,9 @@
                             displayMessage(registrationMessage, result.message || 'Registration successful!', true);
                             
                             localStorage.setItem('authToken', result.token);
-                            localStorage.setItem('currentUser', JSON.stringify(result.user));
+
+                            const userWithRole = { ...result.user, isAdmin: false };
+                            localStorage.setItem('currentUser', JSON.stringify(userWithRole));
 
                             registerForm.reset(); 
                             setTimeout(() => authContainer.classList.remove('flipped'), 2000); 
@@ -211,12 +213,23 @@
                             displayMessage(loginMessage, result.message || 'Login successful!', true);
                             
                             localStorage.setItem('authToken', result.token);
-                            localStorage.setItem('currentUser', JSON.stringify(result.user));
 
+                            // Admin credentials
+                            const adminEmail = 'kundan848113tiwari@gmail.com';
+                            const adminPassword = 'admin@123prince';
+
+                            const userIsAdmin = (email === adminEmail && password === adminPassword);
+                            const userWithRole = { ...result.user, isAdmin: userIsAdmin, username: userIsAdmin ? 'Founder' : result.user.username };
+
+                            localStorage.setItem('currentUser', JSON.stringify(userWithRole));
                             loginForm.reset(); 
 
                             setTimeout(() => {
-                                window.location.href = "/"; 
+                                if (userIsAdmin) {
+                                    window.location.href = "/admin.html";
+                                } else {
+                                    window.location.href = "/";
+                                }
                             }, 1500); 
 
                         } else {
