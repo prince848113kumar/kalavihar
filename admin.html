@@ -104,8 +104,17 @@
                             <input type="number" id="product-price" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
                         </div>
                         <div>
-                            <label for="product-image" class="block text-sm font-medium text-gray-700">Image URL</label>
-                            <input type="url" id="product-image" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                            <label for="product-images" class="block text-sm font-medium text-gray-700">Product Images & Videos</label>
+                            <div class="mt-1 flex items-center space-x-2">
+                                <input type="file" id="product-images" multiple accept="image/*,video/*" class="w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-indigo-50 file:text-indigo-700
+                                hover:file:bg-indigo-100">
+                            </div>
+                            <div id="image-preview" class="mt-2 flex flex-wrap gap-2">
+                                </div>
                         </div>
                         <div>
                             <label for="product-description" class="block text-sm font-medium text-gray-700">Description</label>
@@ -176,12 +185,17 @@
     </div>
 
     <script>
-        // Fake data to simulate a backend API
-        let products = [
-            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, image: 'Madhubani_panting.jpg', description: 'A beautiful handmade Madhubani painting of a peacock.' },
-            { id: 2, name: 'Handmade Sikki Basket', price: 750, image: 'sikki _caraft.jpg', description: 'A traditional basket woven from Sikki grass.' }
+        // Global variables and fake data
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, images: ['Madhubani_panting.jpg'], description: 'A beautiful handmade Madhubani painting of a peacock.' },
+            { id: 2, name: 'Handmade Sikki Basket', price: 750, images: ['sikki _caraft.jpg'], description: 'A traditional basket woven from Sikki grass.' }
         ];
         let editingProductId = null;
+
+        // Function to save products to local storage
+        const saveProductsToLocalStorage = () => {
+            localStorage.setItem('products', JSON.stringify(products));
+        };
 
         // Dashboard Data
         const fetchAdminData = async () => {
@@ -253,7 +267,6 @@
                     productTableBody.appendChild(row);
                 });
 
-                // Add event listeners for edit and delete buttons
                 document.querySelectorAll('.edit-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const id = parseInt(e.target.dataset.id);
@@ -276,7 +289,21 @@
                 editingProductId = id;
                 document.getElementById('product-name').value = product.name;
                 document.getElementById('product-price').value = product.price;
-                document.getElementById('product-image').value = product.image;
+                
+                // Clear existing previews
+                const imagePreviewContainer = document.getElementById('image-preview');
+                imagePreviewContainer.innerHTML = '';
+
+                // Show a preview of the existing image(s)
+                if (product.images && product.images.length > 0) {
+                    product.images.forEach(imgUrl => {
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.className = 'w-24 h-24 object-cover rounded-md border';
+                        imagePreviewContainer.appendChild(img);
+                    });
+                }
+                
                 document.getElementById('product-description').value = product.description;
                 document.getElementById('product-form-container').classList.remove('hidden');
                 document.getElementById('product-list-container').classList.add('hidden');
@@ -285,8 +312,8 @@
 
         const deleteProduct = (id) => {
             products = products.filter(p => p.id !== id);
+            saveProductsToLocalStorage();
             renderProducts();
-            // Update dashboard product count
             loadAdminDashboard();
         };
         
@@ -294,18 +321,32 @@
             e.preventDefault();
             const name = document.getElementById('product-name').value;
             const price = parseFloat(document.getElementById('product-price').value);
-            const image = document.getElementById('product-image').value;
             const description = document.getElementById('product-description').value;
-            
+
+            // Placeholder for new image/video uploads
+            const files = document.getElementById('product-images').files;
+            let fileUrls = [];
+            if (files.length > 0) {
+                // In a real app, you'd upload these files and get URLs from the server.
+                // For this demo, we'll create object URLs from the local files.
+                for (const file of files) {
+                    fileUrls.push(URL.createObjectURL(file));
+                }
+            }
+
             if (editingProductId !== null) {
                 const productIndex = products.findIndex(p => p.id === editingProductId);
                 if (productIndex !== -1) {
-                    products[productIndex] = { id: editingProductId, name, price, image, description };
+                    // Retain old images if no new files are uploaded
+                    const currentImages = files.length > 0 ? fileUrls : products[productIndex].images;
+                    products[productIndex] = { id: editingProductId, name, price, images: currentImages, description };
                 }
             } else {
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name, price, image, description });
+                products.push({ id: newId, name, price, images: fileUrls, description });
             }
+            
+            saveProductsToLocalStorage();
             
             editingProductId = null;
             document.getElementById('product-form').reset();
@@ -352,11 +393,31 @@
             const addProductBtn = document.getElementById('add-product-btn');
             const cancelEditBtn = document.getElementById('cancel-edit-btn');
             const productForm = document.getElementById('product-form');
+            const productImagesInput = document.getElementById('product-images');
+            const imagePreviewContainer = document.getElementById('image-preview');
+
+            if (productImagesInput) {
+                productImagesInput.addEventListener('change', (e) => {
+                    imagePreviewContainer.innerHTML = '';
+                    for (const file of e.target.files) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const mediaElement = file.type.startsWith('video') ? document.createElement('video') : document.createElement('img');
+                            mediaElement.src = event.target.result;
+                            mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
+                            mediaElement.controls = file.type.startsWith('video'); // Add controls for videos
+                            imagePreviewContainer.appendChild(mediaElement);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
             
             if (addProductBtn) {
                 addProductBtn.addEventListener('click', () => {
                     editingProductId = null;
                     document.getElementById('product-form').reset();
+                    imagePreviewContainer.innerHTML = ''; // Clear preview
                     document.getElementById('product-form-container').classList.remove('hidden');
                     document.getElementById('product-list-container').classList.add('hidden');
                 });
@@ -365,6 +426,7 @@
                 cancelEditBtn.addEventListener('click', () => {
                     editingProductId = null;
                     document.getElementById('product-form').reset();
+                    imagePreviewContainer.innerHTML = ''; // Clear preview
                     document.getElementById('product-form-container').classList.add('hidden');
                     document.getElementById('product-list-container').classList.remove('hidden');
                 });
@@ -404,6 +466,9 @@
                     }
                     sections[targetId].classList.remove('hidden');
                     mainTitle.textContent = e.target.textContent.trim();
+                    if (targetId === '#products-section') {
+                         renderProducts(); // Reload products when navigating to the products section
+                    }
                 }
             });
         });
