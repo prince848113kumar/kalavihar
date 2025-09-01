@@ -171,12 +171,19 @@
             const emailInput = document.getElementById('profileEmail');
             const mobileInput = document.getElementById('profileMobile');
             const addressInput = document.getElementById('profileAddress');
-            const editBtn = document.getElementById('editProfileBtn');
-
+            
             usernameInput.value = user.username || '';
             emailInput.value = user.email || '';
-            mobileInput.value = user.mobile || 'Not provided';
-            addressInput.value = user.address || 'Not provided';
+            mobileInput.value = user.mobile || ''; // Set to empty string
+            addressInput.value = user.address || ''; // Set to empty string
+            
+            // Set 'Not provided' as placeholder text
+            if (!user.mobile) {
+                mobileInput.placeholder = 'Not provided';
+            }
+            if (!user.address) {
+                addressInput.placeholder = 'Not provided';
+            }
         }
 
         // Function to toggle edit mode for profile fields
@@ -191,10 +198,16 @@
                     input.setAttribute('readonly', true);
                     input.classList.remove('bg-white');
                     input.classList.add('bg-gray-50');
+                    if (input.value === '') {
+                        input.placeholder = 'Not provided';
+                    }
                 } else {
                     input.removeAttribute('readonly');
                     input.classList.remove('bg-gray-50');
                     input.classList.add('bg-white');
+                    if (input.value === '' && input.placeholder === 'Not provided') {
+                        input.placeholder = '';
+                    }
                 }
             });
 
