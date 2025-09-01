@@ -125,9 +125,7 @@
     </div>
 
     <script>
-        // Faking a fetch from a backend API
         const fetchAdminData = async () => {
-            // This is where you would normally make an API call to get real data.
             const fakeData = {
                 totalProducts: 250,
                 pendingOrders: 27,
@@ -149,7 +147,7 @@
 
             const recentOrdersTableBody = document.getElementById('recent-orders-body');
             if (recentOrdersTableBody) {
-                recentOrdersTableBody.innerHTML = ''; // Clear existing data
+                recentOrdersTableBody.innerHTML = '';
                 data.recentOrders.forEach(order => {
                     const row = document.createElement('tr');
                     row.className = 'border-b';
@@ -207,7 +205,6 @@
 
         document.addEventListener('DOMContentLoaded', checkAdminStatus);
         
-        // Logout button functionality
         const logoutButton = document.getElementById('logout-button');
         if(logoutButton) {
             logoutButton.addEventListener('click', () => {
@@ -217,7 +214,6 @@
             });
         }
 
-        // Navigation and Section Toggling
         const navLinks = document.querySelectorAll('.nav-link');
         const sections = {
             '#dashboard-section': document.getElementById('dashboard-section'),
@@ -241,7 +237,6 @@
             });
         });
 
-        // Add Admin Form Submission (Placeholder)
         const addAdminForm = document.getElementById('add-admin-form');
         const adminMessage = document.getElementById('admin-message');
 

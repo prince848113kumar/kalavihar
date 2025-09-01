@@ -160,7 +160,6 @@
                             displayMessage(registrationMessage, result.message || 'Registration successful!', true);
                             
                             localStorage.setItem('authToken', result.token);
-
                             const userWithRole = { ...result.user, isAdmin: false };
                             localStorage.setItem('currentUser', JSON.stringify(userWithRole));
 
@@ -213,20 +212,17 @@
                             displayMessage(loginMessage, result.message || 'Login successful!', true);
                             
                             localStorage.setItem('authToken', result.token);
-
-                            // Admin credentials
-                            const adminEmail = 'kundan848113tiwari@gmail.com';
-                            const adminPassword = 'admin@123prince';
-
-                            const userIsAdmin = (email === adminEmail && password === adminPassword);
+                            
+                            const userIsAdmin = (email === 'kundan848113tiwari@gmail.com' && password === 'admin@123prince');
                             const userWithRole = { ...result.user, isAdmin: userIsAdmin, username: userIsAdmin ? 'Founder' : result.user.username };
 
                             localStorage.setItem('currentUser', JSON.stringify(userWithRole));
+
                             loginForm.reset(); 
 
                             setTimeout(() => {
-                                if (userIsAdmin) {
-                                    window.location.href = "/admin.html";
+                                if (userWithRole.isAdmin) {
+                                    window.location.replace("/admin.html");
                                 } else {
                                     window.location.replace("/");
                                 }
