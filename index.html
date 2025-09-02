@@ -105,7 +105,7 @@
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Madhubani</h3>
                         <p class="text-gray-600 text-sm">Bihar's renowned folk art</p>
-                        <a href="#" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
+                        <a href="products.html?category=Madhubani" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
@@ -113,7 +113,7 @@
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Sikki</h3>
                         <p class="text-gray-600 text-sm">Beautiful creations from grass</p>
-                        <a href="#" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
+                        <a href="products.html?category=Sikki" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
@@ -121,7 +121,7 @@
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Bamboo</h3>
                         <p class="text-gray-600 text-sm">Eco-friendly products</p>
-                        <a href="#" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
+                        <a href="products.html?category=Bamboo" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
@@ -129,7 +129,7 @@
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Sujani</h3>
                         <p class="text-gray-600 text-sm">Exquisite hand embroidery</p>
-                        <a href="#" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
+                        <a href="products.html?category=Sujani" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
                     </div>
                 </div>
                 <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden">
@@ -137,7 +137,7 @@
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">Textile</h3>
                         <p class="text-gray-600 text-sm">Traditional garments and fabrics</p>
-                        <a href="#" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
+                        <a href="products.html?category=Textile" class="mt-4 inline-block text-indigo-600 hover:underline font-medium">View Products</a>
                     </div>
                 </div>
             </div>
@@ -239,34 +239,29 @@
     </footer>
 
     <script>
-        // Store product data in a global variable
-        let allProducts = [];
-
-        // Function to render products from local storage
         const renderProductsFromLocalStorage = () => {
             const productsGrid = document.getElementById('featured-products-grid');
-            productsGrid.innerHTML = ''; // Clear existing content
+            productsGrid.innerHTML = '';
             const noProductsMessage = document.getElementById('no-products-message');
 
             const storedProducts = localStorage.getItem('products');
-            if (storedProducts) {
-                allProducts = JSON.parse(storedProducts);
-            } else {
-                allProducts = [];
-            }
+            let allProducts = storedProducts ? JSON.parse(storedProducts) : [];
             
             if (allProducts.length > 0) {
                 noProductsMessage.classList.add('hidden');
                 allProducts.forEach(product => {
                     const productCard = document.createElement('div');
                     productCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden';
+                    
+                    const firstImage = product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image';
+
                     productCard.innerHTML = `
-                        <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image'}" 
+                        <img src="${firstImage}" 
                              alt="${product.name}" 
                              class="w-full h-56 object-cover rounded-t-xl">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 truncate mb-2">${product.name}</h3>
-                            <p class="text-gray-600 text-sm mb-3">Artisan: Not specified</p>
+                            <p class="text-gray-600 text-sm mb-3">Category: ${product.category}</p>
                             <div class="flex items-center justify-between mb-4">
                                 <span class="text-2xl font-bold text-indigo-700">₹${product.price}</span>
                                 <div class="flex items-center text-yellow-500">
@@ -274,7 +269,7 @@
                                     <span>4.8</span>
                                 </div>
                             </div>
-                            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium">Add to Cart</button>
+                            <button class="add-to-cart-btn w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium" data-id="${product.id}">Add to Cart</button>
                         </div>
                     `;
                     productsGrid.appendChild(productCard);
@@ -284,23 +279,60 @@
             }
         };
 
+        const addToCart = (productId) => {
+            const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const productToAdd = storedProducts.find(p => p.id === productId);
+
+            if (!productToAdd) {
+                console.error("Product not found!");
+                return;
+            }
+
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingCartItem = cart.find(item => item.id === productId);
+
+            if (existingCartItem) {
+                existingCartItem.quantity++;
+            } else {
+                cart.push({ ...productToAdd, quantity: 1 });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+        };
+
+        const updateCartCount = () => {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            const desktopCountSpan = document.getElementById('cart-count-desktop');
+            const mobileCountSpan = document.getElementById('cart-count-mobile');
+            
+            if (desktopCountSpan) {
+                desktopCountSpan.textContent = cartCount;
+                desktopCountSpan.classList.toggle('hidden', cartCount === 0);
+            }
+            if (mobileCountSpan) {
+                mobileCountSpan.textContent = cartCount;
+                mobileCountSpan.classList.toggle('hidden', cartCount === 0);
+            }
+        };
+
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile Menu Toggle Logic
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', function() {
                     mobileMenu.classList.toggle('hidden');
                 });
             }
 
-            // Image Carousel/Slideshow Logic for Artisan Section
             const artisanCarouselContainer = document.getElementById('artisan-carousel');
             if (artisanCarouselContainer) {
                 const artisanImages = artisanCarouselContainer.querySelectorAll('img');
                 let currentArtisanIndex = 0;
-                const artisanIntervalTime = 3000; // 3000 milliseconds = 3 seconds
+                const artisanIntervalTime = 3000;
 
                 function showArtisanImage(index) {
                     artisanImages.forEach((img) => { 
@@ -320,12 +352,11 @@
                 setInterval(nextArtisanImage, artisanIntervalTime);
             }
 
-            // Image Carousel/Slideshow Logic for Hero Section Background
             const heroCarouselContainer = document.getElementById('hero-background-carousel');
             if (heroCarouselContainer) {
                 const heroImages = heroCarouselContainer.querySelectorAll('img');
                 let currentHeroIndex = 0;
-                const heroIntervalTime = 5000; // 5000 milliseconds = 5 seconds
+                const heroIntervalTime = 5000;
 
                 function showHeroImage(index) {
                     heroImages.forEach((img) => {
@@ -345,7 +376,6 @@
                 setInterval(nextHeroImage, heroIntervalTime);
             }
 
-            // Authentication UI Update
             function updateAuthUI() {
                 const authToken = localStorage.getItem('authToken');
                 const currentUser = localStorage.getItem('currentUser');
@@ -431,7 +461,16 @@
             }
 
             updateAuthUI();
+            updateCartCount();
             renderProductsFromLocalStorage();
+
+            document.getElementById('featured-products-grid').addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    addToCart(productId);
+                    alert('Product added to cart!');
+                }
+            });
         });
     </script>
 </body>
