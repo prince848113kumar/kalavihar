@@ -104,6 +104,24 @@
                             <input type="number" id="product-price" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
                         </div>
                         <div>
+                            <label for="product-category" class="block text-sm font-medium text-gray-700">Category</label>
+                            <select id="product-category" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                                <option value="Madhubani">Madhubani</option>
+                                <option value="Sikki">Sikki</option>
+                                <option value="Bamboo">Bamboo</option>
+                                <option value="Sujani">Sujani</option>
+                                <option value="Textile">Textile</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="product-delivery" class="block text-sm font-medium text-gray-700">Delivery Charge</label>
+                            <select id="product-delivery" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                                <option value="Free">Free Delivery</option>
+                                <option value="50">₹50</option>
+                                <option value="100">₹100</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="product-images" class="block text-sm font-medium text-gray-700">Product Images & Videos</label>
                             <div class="mt-1 flex items-center space-x-2">
                                 <input type="file" id="product-images" multiple accept="image/*,video/*" class="w-full text-sm text-gray-500
@@ -139,6 +157,7 @@
                                 <tr>
                                     <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Product Name</th>
                                     <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Price</th>
+                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Category</th>
                                     <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
                                 </tr>
                             </thead>
@@ -187,17 +206,15 @@
     <script>
         // Global variables and fake data
         let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, images: ['Madhubani_panting.jpg'], description: 'A beautiful handmade Madhubani painting of a peacock.' },
-            { id: 2, name: 'Handmade Sikki Basket', price: 750, images: ['sikki _caraft.jpg'], description: 'A traditional basket woven from Sikki grass.' }
+            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, images: ['Madhubani_panting.jpg'], description: 'A beautiful handmade Madhubani painting of a peacock.', category: 'Madhubani', delivery: 'Free', rating: 4.8 },
+            { id: 2, name: 'Handmade Sikki Basket', price: 750, images: ['sikki _caraft.jpg'], description: 'A traditional basket woven from Sikki grass.', category: 'Sikki', delivery: 'Free', rating: 4.5 }
         ];
         let editingProductId = null;
 
-        // Function to save products to local storage
         const saveProductsToLocalStorage = () => {
             localStorage.setItem('products', JSON.stringify(products));
         };
 
-        // Dashboard Data
         const fetchAdminData = async () => {
             const fakeData = {
                 totalProducts: products.length,
@@ -248,7 +265,6 @@
             displayAdminData(data);
         };
 
-        // Products Section
         const renderProducts = () => {
             const productTableBody = document.getElementById('product-table-body');
             if (productTableBody) {
@@ -259,6 +275,7 @@
                     row.innerHTML = `
                         <td class="py-2 px-4 text-sm text-gray-800">${product.name}</td>
                         <td class="py-2 px-4 text-sm text-gray-800">₹${product.price}</td>
+                        <td class="py-2 px-4 text-sm text-gray-800">${product.category}</td>
                         <td class="py-2 px-4 text-sm text-gray-800">
                             <button data-id="${product.id}" class="edit-btn text-indigo-600 hover:text-indigo-800 mr-2">Edit</button>
                             <button data-id="${product.id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button>
@@ -289,18 +306,18 @@
                 editingProductId = id;
                 document.getElementById('product-name').value = product.name;
                 document.getElementById('product-price').value = product.price;
+                document.getElementById('product-category').value = product.category;
+                document.getElementById('product-delivery').value = product.delivery;
                 
-                // Clear existing previews
                 const imagePreviewContainer = document.getElementById('image-preview');
                 imagePreviewContainer.innerHTML = '';
-
-                // Show a preview of the existing image(s)
                 if (product.images && product.images.length > 0) {
                     product.images.forEach(imgUrl => {
-                        const img = document.createElement('img');
-                        img.src = imgUrl;
-                        img.className = 'w-24 h-24 object-cover rounded-md border';
-                        imagePreviewContainer.appendChild(img);
+                        const mediaElement = imgUrl.startsWith('data:video') ? document.createElement('video') : document.createElement('img');
+                        mediaElement.src = imgUrl;
+                        mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
+                        if (imgUrl.startsWith('data:video')) mediaElement.controls = true;
+                        imagePreviewContainer.appendChild(mediaElement);
                     });
                 }
                 
@@ -321,29 +338,27 @@
             e.preventDefault();
             const name = document.getElementById('product-name').value;
             const price = parseFloat(document.getElementById('product-price').value);
+            const category = document.getElementById('product-category').value;
+            const delivery = document.getElementById('product-delivery').value;
             const description = document.getElementById('product-description').value;
 
-            // Placeholder for new image/video uploads
             const files = document.getElementById('product-images').files;
             let fileUrls = [];
             if (files.length > 0) {
-                // In a real app, you'd upload these files and get URLs from the server.
-                // For this demo, we'll create object URLs from the local files.
                 for (const file of files) {
                     fileUrls.push(URL.createObjectURL(file));
                 }
             }
-
+            
             if (editingProductId !== null) {
                 const productIndex = products.findIndex(p => p.id === editingProductId);
                 if (productIndex !== -1) {
-                    // Retain old images if no new files are uploaded
                     const currentImages = files.length > 0 ? fileUrls : products[productIndex].images;
-                    products[productIndex] = { id: editingProductId, name, price, images: currentImages, description };
+                    products[productIndex] = { id: editingProductId, name, price, images: currentImages, description, category, delivery, rating: products[productIndex].rating };
                 }
             } else {
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name, price, images: fileUrls, description });
+                products.push({ id: newId, name, price, images: fileUrls, description, category, delivery, rating: 4.5 }); // Default rating
             }
             
             saveProductsToLocalStorage();
@@ -357,7 +372,6 @@
             loadAdminDashboard();
         };
 
-        // UI Logic
         const checkAdminStatus = () => {
             const authToken = localStorage.getItem('authToken');
             const currentUser = localStorage.getItem('currentUser');
@@ -405,7 +419,7 @@
                             const mediaElement = file.type.startsWith('video') ? document.createElement('video') : document.createElement('img');
                             mediaElement.src = event.target.result;
                             mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
-                            mediaElement.controls = file.type.startsWith('video'); // Add controls for videos
+                            if (file.type.startsWith('video')) mediaElement.controls = true;
                             imagePreviewContainer.appendChild(mediaElement);
                         };
                         reader.readAsDataURL(file);
@@ -417,7 +431,7 @@
                 addProductBtn.addEventListener('click', () => {
                     editingProductId = null;
                     document.getElementById('product-form').reset();
-                    imagePreviewContainer.innerHTML = ''; // Clear preview
+                    imagePreviewContainer.innerHTML = '';
                     document.getElementById('product-form-container').classList.remove('hidden');
                     document.getElementById('product-list-container').classList.add('hidden');
                 });
@@ -426,7 +440,7 @@
                 cancelEditBtn.addEventListener('click', () => {
                     editingProductId = null;
                     document.getElementById('product-form').reset();
-                    imagePreviewContainer.innerHTML = ''; // Clear preview
+                    imagePreviewContainer.innerHTML = '';
                     document.getElementById('product-form-container').classList.add('hidden');
                     document.getElementById('product-list-container').classList.remove('hidden');
                 });
@@ -467,7 +481,7 @@
                     sections[targetId].classList.remove('hidden');
                     mainTitle.textContent = e.target.textContent.trim();
                     if (targetId === '#products-section') {
-                         renderProducts(); // Reload products when navigating to the products section
+                         renderProducts();
                     }
                 }
             });

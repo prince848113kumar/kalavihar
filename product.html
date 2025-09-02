@@ -21,7 +21,7 @@
 
                 <nav id="desktop-nav" class="hidden md:flex items-center space-x-6">
                     <a href="/" class="text-gray-600 hover:text-indigo-700 transition duration-300">Home</a>
-                    <a href="#categories-section" class="text-gray-600 hover:text-indigo-700 transition duration-300">Categories</a>
+                    <a href="products.html" class="text-gray-600 hover:text-indigo-700 transition duration-300">Products</a>
                     <a href="#sell-section" class="text-gray-600 hover:text-indigo-700 transition duration-300">Sell</a>
                     <a href="#about-us-section" class="text-gray-600 hover:text-indigo-700 transition duration-300">About Us</a>
                     <a href="#contact-social-section" class="text-gray-600 hover:text-indigo-700 transition duration-300">Contact</a>
@@ -97,11 +97,11 @@
             <div id="footer-quick-links">
                 <h3 class="text-xl font-semibold text-white mb-4">Quick Links</h3>
                 <ul class="space-y-2">
-                    <li><a href="#hero-section" class="hover:text-white transition duration-300">Home</a></li>
-                    <li><a href="#categories-section" class="hover:text-white transition duration-300">Categories</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Home</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Products</a></li>
                     <li><a href="#" class="hover:text-white transition duration-300">Sell</a></li>
-                    <li><a href="#about-us-section" class="hover:text-white transition duration-300">About Us</a></li>
-                    <li><a href="#contact-social-section" class="hover:text-white transition duration-300">Contact</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition duration-300">Contact</a></li>
                 </ul>
             </div>
 
@@ -164,6 +164,15 @@
                     
                     const firstImage = product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image';
 
+                    const deliveryInfo = product.delivery === 'Free' ? 
+                        '<span class="text-green-600 font-semibold text-sm">Free Delivery</span>' : 
+                        `<span class="text-gray-600 text-sm">Delivery: ₹${product.delivery}</span>`;
+                    
+                    const ratingStars = '<div class="flex items-center text-yellow-500">' + 
+                                        '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.927 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>' +
+                                        `<span>${product.rating || 'N/A'}</span>` +
+                                        '</div>';
+
                     productCard.innerHTML = `
                         <img src="${firstImage}" 
                              alt="${product.name}" 
@@ -171,12 +180,10 @@
                         <div class="p-6">
                             <h3 class="text-lg font-semibold text-gray-900 truncate mb-2">${product.name}</h3>
                             <p class="text-gray-600 text-sm mb-3">Category: ${product.category}</p>
+                            <p class="text-gray-600 text-sm mb-3">${deliveryInfo}</p>
                             <div class="flex items-center justify-between mb-4">
                                 <span class="text-2xl font-bold text-indigo-700">₹${product.price}</span>
-                                <div class="flex items-center text-yellow-500">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.927 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
-                                    <span>4.8</span>
-                                </div>
+                                ${ratingStars}
                             </div>
                             <button class="add-to-cart-btn w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium" data-id="${product.id}">Add to Cart</button>
                         </div>
@@ -236,7 +243,6 @@
                 }
             });
 
-            // Mobile Menu Toggle Logic
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenuButton && mobileMenu) {
