@@ -204,7 +204,6 @@
     </div>
 
     <script>
-        // Global variables and fake data
         let products = JSON.parse(localStorage.getItem('products')) || [
             { id: 1, name: 'Madhubani Peacock Painting', price: 1200, images: ['Madhubani_panting.jpg'], description: 'A beautiful handmade Madhubani painting of a peacock.', category: 'Madhubani', delivery: 'Free', rating: 4.8 },
             { id: 2, name: 'Handmade Sikki Basket', price: 750, images: ['sikki _caraft.jpg'], description: 'A traditional basket woven from Sikki grass.', category: 'Sikki', delivery: 'Free', rating: 4.5 }
@@ -358,7 +357,7 @@
                 }
             } else {
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name, price, images: fileUrls, description, category, delivery, rating: 4.5 }); // Default rating
+                products.push({ id: newId, name, price, images: fileUrls, description, category, delivery, rating: 4.5 });
             }
             
             saveProductsToLocalStorage();
