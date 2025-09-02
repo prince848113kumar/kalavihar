@@ -241,9 +241,14 @@
     <script>
         const renderProductsFromLocalStorage = () => {
             const productsGrid = document.getElementById('featured-products-grid');
-            productsGrid.innerHTML = '';
             const noProductsMessage = document.getElementById('no-products-message');
+            
+            if (!productsGrid || !noProductsMessage) {
+                console.error("Home page product elements not found.");
+                return;
+            }
 
+            productsGrid.innerHTML = '';
             const storedProducts = localStorage.getItem('products');
             let allProducts = storedProducts ? JSON.parse(storedProducts) : [];
             
@@ -336,7 +341,6 @@
 
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', function() {
                     mobileMenu.classList.toggle('hidden');
