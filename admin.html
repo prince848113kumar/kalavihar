@@ -343,21 +343,38 @@
 
             const files = document.getElementById('product-images').files;
             let fileUrls = [];
+
             if (files.length > 0) {
-                for (const file of files) {
-                    fileUrls.push(URL.createObjectURL(file));
-                }
+                const readFiles = (index) => {
+                    if (index >= files.length) {
+                        finalizeSave(fileUrls);
+                        return;
+                    }
+
+                    const file = files[index];
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        fileUrls.push(event.target.result); // Save Base64 data
+                        readFiles(index + 1);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                readFiles(0);
+            } else {
+                finalizeSave(null);
             }
-            
+        };
+        
+        const finalizeSave = (fileUrls) => {
             if (editingProductId !== null) {
                 const productIndex = products.findIndex(p => p.id === editingProductId);
                 if (productIndex !== -1) {
-                    const currentImages = files.length > 0 ? fileUrls : products[productIndex].images;
-                    products[productIndex] = { id: editingProductId, name, price, images: currentImages, description, category, delivery, rating: products[productIndex].rating };
+                    const currentImages = fileUrls && fileUrls.length > 0 ? fileUrls : products[productIndex].images;
+                    products[productIndex] = { id: editingProductId, name: document.getElementById('product-name').value, price: parseFloat(document.getElementById('product-price').value), images: currentImages, description: document.getElementById('product-description').value, category: document.getElementById('product-category').value, delivery: document.getElementById('product-delivery').value, rating: products[productIndex].rating };
                 }
             } else {
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name, price, images: fileUrls, description, category, delivery, rating: 4.5 });
+                products.push({ id: newId, name: document.getElementById('product-name').value, price: parseFloat(document.getElementById('product-price').value), images: fileUrls, description: document.getElementById('product-description').value, category: document.getElementById('product-category').value, delivery: document.getElementById('product-delivery').value, rating: 4.5 });
             }
             
             saveProductsToLocalStorage();
