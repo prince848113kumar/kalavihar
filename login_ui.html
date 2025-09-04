@@ -161,7 +161,6 @@
                             
                             localStorage.setItem('authToken', result.token);
                             
-                            // Fetch existing users from localStorage or initialize an empty array
                             const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
                             const newUserId = storedUsers.length > 0 ? Math.max(...storedUsers.map(u => u.id)) + 1 : 1;
                             const userWithRole = { ...result.user, id: newUserId, isAdmin: false, role: 'User' };
@@ -222,16 +221,22 @@
                             const userIsAdmin = (email === 'kundan848113tiwari@gmail.com' && password === 'admin@123prince');
                             const userWithRole = { ...result.user, isAdmin: userIsAdmin, username: userIsAdmin ? 'Founder' : result.user.username };
                             
-                            // Get users from localStorage, find the current user, and set the role
                             const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-                            const existingUser = storedUsers.find(u => u.email === userWithRole.email);
+                            let existingUser = storedUsers.find(u => u.email === userWithRole.email);
+
                             if (existingUser) {
                                 existingUser.isAdmin = userIsAdmin;
                                 existingUser.role = userIsAdmin ? 'Admin' : 'User';
+                                
+                                const userIndex = storedUsers.findIndex(u => u.email === existingUser.email);
+                                if (userIndex !== -1) {
+                                    storedUsers[userIndex] = existingUser;
+                                }
+
                                 localStorage.setItem('users', JSON.stringify(storedUsers));
                                 localStorage.setItem('currentUser', JSON.stringify(existingUser));
+
                             } else {
-                                // If user is not found in the global users array, add them.
                                 const newUserId = storedUsers.length > 0 ? Math.max(...storedUsers.map(u => u.id)) + 1 : 1;
                                 const newUser = { ...userWithRole, id: newUserId, role: userIsAdmin ? 'Admin' : 'User' };
                                 storedUsers.push(newUser);
