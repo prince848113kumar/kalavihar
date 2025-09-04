@@ -315,9 +315,9 @@
         };
 
         const fetchAdminData = async () => {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const storedOrders = JSON.parse(localStorage.getItem('orders')) || [];
-            const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
+            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
+            const storedProducts = JSON.parse(localStorage.getItem('products')) || products;
 
             const totalUsers = storedUsers.length;
             const pendingOrders = storedOrders.filter(o => o.status === 'Pending').length;
@@ -377,8 +377,8 @@
 
             ordersTableBody.innerHTML = '';
             
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const storedOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
+            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
 
             if (storedOrders.length > 0) {
                 noOrdersMessage.classList.add('hidden');
@@ -435,8 +435,8 @@
 
             orderHistoryTableBody.innerHTML = '';
             
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
-            const storedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
+            const storedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || orderHistory;
 
             if (storedOrderHistory.length > 0) {
                 noHistoryMessage.classList.add('hidden');
@@ -469,7 +469,7 @@
 
             usersTableBody.innerHTML = '';
             
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
 
             if (storedUsers.length > 0) {
                 noUsersMessage.classList.add('hidden');
@@ -490,9 +490,13 @@
         };
 
         const viewOrderDetails = (orderId) => {
-            const order = orders.find(o => o.id === orderId) || orderHistory.find(o => o.id === orderId);
+            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
+            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
+            const storedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || orderHistory;
+
+            const order = storedOrders.find(o => o.id === orderId) || storedOrderHistory.find(o => o.id === orderId);
             if (order) {
-                const customer = users.find(u => u.id === order.customerId);
+                const customer = storedUsers.find(u => u.id === order.customerId);
                 const customerName = customer ? customer.username : 'Unknown User';
                 const modalContent = document.getElementById('modal-content');
                 modalContent.innerHTML = `
@@ -532,7 +536,7 @@
             const productTableBody = document.getElementById('product-table-body');
             if (productTableBody) {
                 productTableBody.innerHTML = '';
-                const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
+                const storedProducts = JSON.parse(localStorage.getItem('products')) || products;
                 products.forEach(product => {
                     const row = document.createElement('tr');
                     row.className = 'border-b';
@@ -697,7 +701,9 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            checkAdminStatus();
+            if (window.location.href.includes('admin.html')) {
+                checkAdminStatus();
+            }
             renderProducts();
             
             const addProductBtn = document.getElementById('add-product-btn');
