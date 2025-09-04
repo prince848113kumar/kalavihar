@@ -344,46 +344,36 @@
 
             const files = document.getElementById('product-images').files;
             
-            // Check if files were selected by the user
+            // Files ko Base64 mein convert karne ke bajaye, hum ek placeholder URL ka use karenge.
+            // Isse localStorage ki limit exceed nahi hogi.
+            let fileUrls = [];
             if (files.length > 0) {
-                // For now, let's just use a placeholder to avoid the localStorage quota issue
-                const placeholderImages = ['https://placehold.co/400x300/e0e7ff/3f3f46?text=New+Product'];
-                
-                // If it's an existing product, keep old images if no new files are selected
-                let imagesToSave = placeholderImages;
-                if (editingProductId !== null) {
-                    const productToEdit = products.find(p => p.id === editingProductId);
-                    if (productToEdit && files.length === 0) {
-                        imagesToSave = productToEdit.images;
-                    }
-                }
-                
-                finalizeSave(imagesToSave);
+                // Yahan hum sirf ek placeholder image ka URL store kar rahe hain.
+                fileUrls.push('https://placehold.co/400x300/e0e7ff/3f3f46?text=New+Product');
             } else {
-                // If no new files are selected, use old images or a placeholder
-                let imagesToSave = ['https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image'];
+                // Agar koi new file nahi hai, to existing product ki images ka use karein.
                 if (editingProductId !== null) {
                     const productToEdit = products.find(p => p.id === editingProductId);
                     if (productToEdit) {
-                        imagesToSave = productToEdit.images;
+                        fileUrls = productToEdit.images;
                     }
+                } else {
+                    // Naye product ke liye default placeholder
+                    fileUrls.push('https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image');
                 }
-                finalizeSave(imagesToSave);
             }
-        };
-        
-        const finalizeSave = (fileUrls) => {
+            
             if (editingProductId !== null) {
                 const productIndex = products.findIndex(p => p.id === editingProductId);
                 if (productIndex !== -1) {
                     products[productIndex] = { 
                         id: editingProductId, 
-                        name: document.getElementById('product-name').value, 
-                        price: parseFloat(document.getElementById('product-price').value), 
-                        images: fileUrls || products[productIndex].images, 
-                        description: document.getElementById('product-description').value, 
-                        category: document.getElementById('product-category').value, 
-                        delivery: document.getElementById('product-delivery').value, 
+                        name: name, 
+                        price: price, 
+                        images: fileUrls, 
+                        description: description, 
+                        category: category, 
+                        delivery: delivery, 
                         rating: products[productIndex].rating 
                     };
                 }
@@ -391,12 +381,12 @@
                 const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
                 products.push({ 
                     id: newId, 
-                    name: document.getElementById('product-name').value, 
-                    price: parseFloat(document.getElementById('product-price').value), 
+                    name: name, 
+                    price: price, 
                     images: fileUrls, 
-                    description: document.getElementById('product-description').value, 
-                    category: document.getElementById('product-category').value, 
-                    delivery: document.getElementById('product-delivery').value, 
+                    description: description, 
+                    category: category, 
+                    delivery: delivery, 
                     rating: 4.5 
                 });
             }
@@ -412,6 +402,7 @@
             loadAdminDashboard();
             document.getElementById('product-message').textContent = 'Product saved successfully!';
             document.getElementById('product-message').classList.add('text-green-600');
+            setTimeout(() => document.getElementById('product-message').textContent = '', 3000);
         };
 
         const checkAdminStatus = () => {
@@ -455,11 +446,17 @@
             if (productImagesInput) {
                 productImagesInput.addEventListener('change', (e) => {
                     imagePreviewContainer.innerHTML = '';
-                    // Placeholder for image preview, since we no longer save full images
-                    const placeholderImg = document.createElement('img');
-                    placeholderImg.src = 'https://placehold.co/100x100?text=Preview';
-                    placeholderImg.className = 'w-24 h-24 object-cover rounded-md border';
-                    imagePreviewContainer.appendChild(placeholderImg);
+                    for (const file of e.target.files) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const mediaElement = file.type.startsWith('video') ? document.createElement('video') : document.createElement('img');
+                            mediaElement.src = event.target.result;
+                            mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
+                            if (file.type.startsWith('video')) mediaElement.controls = true;
+                            imagePreviewContainer.appendChild(mediaElement);
+                        };
+                        reader.readAsDataURL(file);
+                    }
                 });
             }
             
