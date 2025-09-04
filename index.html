@@ -286,76 +286,6 @@
                 noProductsMessage.classList.remove('hidden');
             }
         };
-
-        // Call the function when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            // ... existing code ...
-            renderFeaturedProducts();
-            // ... existing code ...
-        });
-        const renderProductsByFilter = () => {
-            const productsGrid = document.getElementById('product-grid');
-            const noProductsMessage = document.getElementById('no-products-message');
-            const pageTitle = document.getElementById('page-title');
-
-            if (!productsGrid || !noProductsMessage || !pageTitle) {
-                console.error("Product page elements not found.");
-                return;
-            }
-
-            productGrid.innerHTML = '';
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryFilter = urlParams.get('category');
-            
-            const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-
-            let filteredProducts = storedProducts;
-            if (categoryFilter) {
-                filteredProducts = storedProducts.filter(p => p.category === categoryFilter);
-                pageTitle.textContent = `${categoryFilter} Art & Craft`;
-            } else {
-                pageTitle.textContent = 'All Products';
-            }
-
-            if (filteredProducts.length > 0) {
-                noProductsMessage.classList.add('hidden');
-                filteredProducts.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden';
-                    
-                    const firstImage = product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/400x300/e0e7ff/3f3f46?text=No+Image';
-
-                    const deliveryInfo = product.delivery === 'Free' ? 
-                        '<span class="text-green-600 font-semibold text-sm">Free Delivery</span>' : 
-                        `<span class="text-gray-600 text-sm">Delivery: ₹${product.delivery}</span>`;
-                    
-                    const ratingStars = '<div class="flex items-center text-yellow-500">' + 
-                                        '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.927 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>' +
-                                        `<span>${product.rating || 'N/A'}</span>` +
-                                        '</div>';
-
-                    productCard.innerHTML = `
-                        <img src="${firstImage}" 
-                             alt="${product.name}" 
-                             class="w-full h-56 object-cover rounded-t-xl">
-                        <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-900 truncate mb-2">${product.name}</h3>
-                            <p class="text-gray-600 text-sm mb-3">Category: ${product.category}</p>
-                            <p class="text-gray-600 text-sm mb-3">${deliveryInfo}</p>
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="text-2xl font-bold text-indigo-700">₹${product.price}</span>
-                                ${ratingStars}
-                            </div>
-                            <button class="add-to-cart-btn w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-300 font-medium" data-id="${product.id}">Add to Cart</button>
-                        </div>
-                    `;
-                    productGrid.appendChild(productCard);
-                });
-            } else {
-                noProductsMessage.classList.remove('hidden');
-            }
-        };
-
         const addToCart = (productId) => {
             const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
             const productToAdd = storedProducts.find(p => p.id === productId);
@@ -391,19 +321,101 @@
             }
         };
 
+        const updateAuthUI = () => {
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            const desktopAuthButtonsContainer = document.getElementById('desktop-auth-buttons-container'); 
+            const mobileHeaderAuthIconContainer = document.getElementById('mobile-header-auth-icon-container');
+            const mobileAuthButtonsContainerMenu = document.getElementById('mobile-auth-buttons-container-menu');
+
+            if (authToken && currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    if (desktopAuthButtonsContainer) { 
+                        desktopAuthButtonsContainer.innerHTML = `
+                            <a href="/cart.html" class="text-gray-600 hover:text-indigo-700 transition duration-300 rounded-full p-2 relative">
+                                <i class="fas fa-shopping-cart text-xl"></i>
+                                <span id="cart-count-desktop" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"></span>
+                            </a>
+                            <a href="/profile.html" class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">नमस्ते, ${user.username}</a>
+                            <button id="logoutButton" class="border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">लॉगआउट</button>
+                            ${user.isAdmin ? '<a href="/admin.html" class="bg-gray-200 text-gray-800 px-5 py-2 rounded-full hover:bg-gray-300 transition duration-300 shadow-md">एडमिन पैनल</a>' : ''}
+                        `;
+                    }
+                    if (mobileHeaderAuthIconContainer) {
+                        mobileHeaderAuthIconContainer.innerHTML = `
+                            <a href="/profile.html" class="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-lg hover:bg-indigo-700 transition duration-300">
+                                ${user.username.charAt(0).toUpperCase()}
+                            </a>
+                        `;
+                    }
+                    if (mobileAuthButtonsContainerMenu) {
+                        mobileAuthButtonsContainerMenu.innerHTML = `
+                            <a href="/profile.html" class="w-full text-center flex items-center justify-center bg-indigo-600 text-white px-5 py-2 rounded-full text-lg font-bold hover:bg-indigo-700 transition duration-300 shadow-md">नमस्ते, ${user.username}</a>
+                            <button id="mobileLogoutButton" class="w-full text-center border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">लॉगआउट</button>
+                            ${user.isAdmin ? '<a href="/admin.html" class="w-full text-center bg-gray-200 text-gray-800 px-5 py-2 rounded-full hover:bg-gray-300 transition duration-300 shadow-md">एडमिन पैनल</a>' : ''}
+                        `;
+                    }
+                    const logoutBtn = document.getElementById('logoutButton');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', function() {
+                            localStorage.removeItem('authToken');
+                            localStorage.removeItem('currentUser');
+                            window.location.href = '/'; 
+                        });
+                    }
+                    const mobileLogoutBtn = document.getElementById('mobileLogoutButton');
+                    if (mobileLogoutBtn) {
+                        mobileLogoutBtn.addEventListener('click', function() {
+                            localStorage.removeItem('authToken');
+                            localStorage.removeItem('currentUser');
+                            window.location.href = '/'; 
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error parsing current user data:", e);
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                }
+            } else {
+                if (desktopAuthButtonsContainer) {
+                    desktopAuthButtonsContainer.innerHTML = `
+                        <a href="/cart.html" class="text-gray-600 hover:text-indigo-700 transition duration-300 rounded-full p-2 relative">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cart-count-desktop" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"></span>
+                        </a>
+                        <a href="login_ui.html" class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">Login</a>
+                        <a href="login_ui.html?form=register" class="border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">Register</a>
+                    `;
+                }
+                if (mobileAuthButtonsContainerMenu) {
+                    mobileAuthButtonsContainerMenu.innerHTML = `
+                        <a href="login_ui.html" class="w-full text-center bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">Login</a>
+                        <a href="login_ui.html?form=register" class="w-full text-center border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">Register</a>
+                    `;
+                }
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
-            renderProductsByFilter();
+            renderFeaturedProducts();
             updateAuthUI();
             updateCartCount();
+            
+            // Event listener for adding products to cart
+            const productGrid = document.getElementById('featured-products-grid');
+            if (productGrid) {
+                productGrid.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('add-to-cart-btn')) {
+                        const productId = parseInt(e.target.dataset.id);
+                        addToCart(productId);
+                        alert('Product added to cart!');
+                    }
+                });
+            }
 
-            document.getElementById('product-grid').addEventListener('click', (e) => {
-                if (e.target.classList.contains('add-to-cart-btn')) {
-                    const productId = parseInt(e.target.dataset.id);
-                    addToCart(productId);
-                    alert('Product added to cart!');
-                }
-            });
-
+            // Mobile menu toggle logic
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             if (mobileMenuButton && mobileMenu) {
@@ -411,84 +423,8 @@
                     mobileMenu.classList.toggle('hidden');
                 });
             }
-
-            function updateAuthUI() {
-                const authToken = localStorage.getItem('authToken');
-                const currentUser = localStorage.getItem('currentUser');
-                
-                const desktopAuthButtonsContainer = document.getElementById('desktop-auth-buttons-container'); 
-                const mobileHeaderAuthIconContainer = document.getElementById('mobile-header-auth-icon-container');
-                const mobileAuthButtonsContainerMenu = document.getElementById('mobile-auth-buttons-container-menu');
-
-                if (authToken && currentUser) {
-                    try {
-                        const user = JSON.parse(currentUser);
-                        if (desktopAuthButtonsContainer) { 
-                            desktopAuthButtonsContainer.innerHTML = `
-                                <a href="/cart.html" class="text-gray-600 hover:text-indigo-700 transition duration-300 rounded-full p-2 relative">
-                                    <i class="fas fa-shopping-cart text-xl"></i>
-                                    <span id="cart-count-desktop" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"></span>
-                                </a>
-                                <a href="/profile.html" class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">नमस्ते, ${user.username}</a>
-                                <button id="logoutButton" class="border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">लॉगआउट</button>
-                                ${user.isAdmin ? '<a href="/admin.html" class="bg-indigo-500 text-white-800 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300 shadow-md">Admin Panel</a>' : ''}
-                            `;
-                        }
-                        if (mobileHeaderAuthIconContainer) {
-                            mobileHeaderAuthIconContainer.innerHTML = `
-                                <a href="/profile.html" class="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600 text-white font-bold text-lg hover:bg-indigo-700 transition duration-300">
-                                    ${user.username.charAt(0).toUpperCase()}
-                                </a>
-                            `;
-                        }
-                        if (mobileAuthButtonsContainerMenu) {
-                            mobileAuthButtonsContainerMenu.innerHTML = `
-                                <a href="/profile.html" class="w-full text-center flex items-center justify-center bg-indigo-600 text-white px-5 py-2 rounded-full text-lg font-bold hover:bg-indigo-700 transition duration-300 shadow-md">नमस्ते, ${user.username}</a>
-                                <button id="mobileLogoutButton" class="w-full text-center border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">लॉगआउट</button>
-                                ${user.isAdmin ? '<a href="/admin.html" class="w-full text-center bg-gray-200 text-gray-800 px-5 py-2 rounded-full hover:bg-gray-300 transition duration-300 shadow-md">एडमिन पैनल</a>' : ''}
-                            `;
-                        }
-                        const logoutBtn = document.getElementById('logoutButton');
-                        if (logoutBtn) {
-                            logoutBtn.addEventListener('click', function() {
-                                localStorage.removeItem('authToken');
-                                localStorage.removeItem('currentUser');
-                                window.location.href = '/'; 
-                            });
-                        }
-                        const mobileLogoutBtn = document.getElementById('mobileLogoutButton');
-                        if (mobileLogoutBtn) {
-                            mobileLogoutBtn.addEventListener('click', function() {
-                                localStorage.removeItem('authToken');
-                                localStorage.removeItem('currentUser');
-                                window.location.href = '/'; 
-                            });
-                        }
-                    } catch (e) {
-                        console.error("Error parsing current user data:", e);
-                        localStorage.removeItem('authToken');
-                        localStorage.removeItem('currentUser');
-                    }
-                } else {
-                    if (desktopAuthButtonsContainer) {
-                        desktopAuthButtonsContainer.innerHTML = `
-                            <a href="/cart.html" class="text-gray-600 hover:text-indigo-700 transition duration-300 rounded-full p-2 relative">
-                                <i class="fas fa-shopping-cart text-xl"></i>
-                                <span id="cart-count-desktop" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"></span>
-                            </a>
-                            <a href="login_ui.html" class="bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">Login</a>
-                            <a href="login_ui.html?form=register" class="border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">Register</a>
-                        `;
-                    }
-                    if (mobileAuthButtonsContainerMenu) {
-                        mobileAuthButtonsContainerMenu.innerHTML = `
-                            <a href="login_ui.html" class="w-full text-center bg-indigo-600 text-white px-5 py-2 rounded-full hover:bg-indigo-700 transition duration-300 shadow-md">Login</a>
-                            <a href="login_ui.html?form=register" class="w-full text-center border border-indigo-600 text-indigo-600 px-5 py-2 rounded-full hover:bg-indigo-50 transition duration-300">Register</a>
-                        `;
-                    }
-                }
-            }
         });
+
     </script>
 </body>
 </html>
