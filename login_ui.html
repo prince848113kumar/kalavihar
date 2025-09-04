@@ -3,276 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KalaVihar - Admin Panel</title>
+    <title>KalaVihar - Login & Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login_style.css">
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 text-gray-800">
 
-    <div class="flex h-screen">
-        <aside id="admin-sidebar" class="w-64 bg-gray-800 text-white p-6 space-y-6 hidden md:block">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl font-bold text-indigo-400">KalaVihar</span>
-            </div>
-            <nav>
-                <a href="#dashboard-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-                </a>
-                <a href="#products-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-box mr-2"></i> Products
-                </a>
-                <a href="#orders-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-shopping-bag mr-2"></i> Orders
-                </a>
-                <a href="#order-history-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-history mr-2"></i> Order History
-                </a>
-                <a href="#users-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-users mr-2"></i> Users
-                </a>
-                <a href="#analytics-section" class="nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-chart-line mr-2"></i> Analytics
-                </a>
-                <a id="add-admin-link" href="#add-admin-section" class="hidden nav-link block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-indigo-400">
-                    <i class="fas fa-user-plus mr-2"></i> Add Admin
-                </a>
-            </nav>
-        </aside>
-
-        <main class="flex-1 p-8 overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <button id="mobile-nav-toggle" class="md:hidden text-gray-600 hover:text-indigo-700">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-                <h1 id="main-title" class="text-3xl font-bold text-gray-800">Dashboard</h1>
-                <div class="flex items-center space-x-4">
-                    <span id="admin-name" class="text-gray-600">Admin</span>
-                    <button id="logout-button" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
-                        Logout
-                    </button>
-                </div>
-            </div>
-
-            <section id="dashboard-section">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Total Products</h2>
-                        <p id="total-products" class="text-4xl font-bold text-indigo-600">...</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Pending Orders</h2>
-                        <p id="pending-orders" class="text-4xl font-bold text-red-600">...</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-2">Total Users</h2>
-                        <p id="total-users" class="text-4xl font-bold text-green-600">...</p>
-                    </div>
-                </div>
-
-                <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Recent Orders</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Order ID</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Customer</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Amount</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-orders-body">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="products-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-700">Product Management</h2>
-                    <button id="add-product-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300">
-                        <i class="fas fa-plus mr-2"></i> Add Product
-                    </button>
-                </div>
-
-                <div id="product-form-container" class="mb-6 hidden">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Add/Edit Product</h3>
-                    <form id="product-form" class="space-y-4">
-                        <input type="hidden" id="product-id">
-                        <div>
-                            <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                            <input type="text" id="product-name" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-price" class="block text-sm font-medium text-gray-700">Price (₹)</label>
-                            <input type="number" id="product-price" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
-                        </div>
-                        <div>
-                            <label for="product-category" class="block text-sm font-medium text-gray-700">Category</label>
-                            <select id="product-category" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
-                                <option value="Madhubani">Madhubani</option>
-                                <option value="Sikki">Sikki</option>
-                                <option value="Bamboo">Bamboo</option>
-                                <option value="Sujani">Sujani</option>
-                                <option value="Textile">Textile</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="product-delivery" class="block text-sm font-medium text-gray-700">Delivery Charge</label>
-                            <select id="product-delivery" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
-                                <option value="Free">Free Delivery</option>
-                                <option value="50">₹50</option>
-                                <option value="100">₹100</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="product-images" class="block text-sm font-medium text-gray-700">Product Images & Videos</label>
-                            <div class="mt-1 flex items-center space-x-2">
-                                <input type="file" id="product-images" multiple accept="image/*,video/*" class="w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-indigo-50 file:text-indigo-700
-                                hover:file:bg-indigo-100">
-                            </div>
-                            <div id="image-preview" class="mt-2 flex flex-wrap gap-2">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="product-description" class="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea id="product-description" rows="3" class="mt-1 w-full p-2 border border-gray-300 rounded-md"></textarea>
-                        </div>
-                        <div class="flex space-x-4">
-                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300">
-                                Save Product
-                            </button>
-                            <button type="button" id="cancel-edit-btn" class="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition duration-300">
-                                Cancel
-                            </button>
-                        </div>
-                        <p id="product-message" class="mt-2 text-sm"></p>
-                    </form>
-                </div>
-                
-                <div id="product-list-container">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border-collapse">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Product Name</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Price</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Category</th>
-                                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="product-table-body">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="orders-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-700">Order Management</h2>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-200">
-                            <tr>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Order ID</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Customer Name</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Product(s)</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Total Amount</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body">
-                            </tbody>
-                    </table>
-                    <p id="no-orders-message" class="text-center text-gray-500 hidden mt-4">No orders to display.</p>
-                </div>
-            </section>
-
-            <section id="order-history-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-700">Order History</h2>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-200">
-                            <tr>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Order ID</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Customer Name</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Total Amount</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="order-history-table-body">
-                            </tbody>
-                    </table>
-                    <p id="no-history-message" class="text-center text-gray-500 hidden mt-4">No past orders to display.</p>
-                </div>
-            </section>
-
-            <section id="users-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">User Management</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white">
-                        <thead class="bg-gray-200">
-                            <tr>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Username</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Email</th>
-                                <th class="py-2 px-4 text-left text-sm font-semibold text-gray-600">Role</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            </tbody>
-                    </table>
-                    <p id="no-users-message" class="text-center text-gray-500 hidden mt-4">No registered users to display.</p>
-                </div>
-            </section>
-
-            <section id="analytics-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Analytics</h2>
-                <p>Here you can view website analytics and reports.</p>
-            </section>
-
-            <section id="add-admin-section" class="mt-8 bg-white p-6 rounded-lg shadow-md hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Add New Admin</h2>
-                <form id="add-admin-form" class="space-y-4">
+    <div class="auth-container w-full max-w-md h-[750px]"> 
+        <div class="auth-card-inner">
+            <div class="auth-card-front bg-white">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-2">Login to KalaVihar</h2>
+                <p class="text-gray-600 mb-8">Return to your creative world</p>
+                <form id="loginForm" class="space-y-6">
                     <div>
-                        <label for="new-admin-email" class="block text-sm font-medium text-gray-700">Admin Email</label>
-                        <input type="email" id="new-admin-email" name="email" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        <label for="loginEmail" class="block text-left text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <input type="email" id="loginEmail" name="email" required placeholder="Enter your email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
                     </div>
                     <div>
-                        <label for="new-admin-password" class="block text-sm font-medium text-gray-700">Temporary Password</label>
-                        <input type="password" id="new-admin-password" name="password" required class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        <label for="loginPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="loginPassword" name="password" required placeholder="Enter your password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
                     </div>
-                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300">
-                        Create Admin
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                            Forgot your password?
+                        </a>
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
+                        Log In
                     </button>
-                    <p id="admin-message" class="mt-2 text-sm"></p>
+                    <p id="loginMessage" class="mt-4 text-center text-sm"></p>
                 </form>
-            </section>
-        </main>
-    </div>
-    
-    <div id="order-details-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3 text-center">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Order Details</h3>
-                <div id="modal-content" class="text-left space-y-2">
+                <div class="mt-8 text-sm text-gray-600">
+                    Don't have an account yet?
+                    <button id="showRegister" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-300 focus:outline-none">
+                        Register
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-card-back bg-white">
+                <h2 class="text-3xl font-bold text-indigo-700 mb-2">Join KalaVihar</h2>
+                <p class="text-gray-600 mb-8">Bring your art to the world</p>
+                <form id="registerForm" class="space-y-6">
+                    <div>
+                        <label for="registerUsername" class="block text-left text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <input type="text" id="registerUsername" name="username" required placeholder="Enter your username" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
                     </div>
-                <div class="items-center px-4 py-3">
-                    <button id="close-modal-btn" class="px-4 py-2 bg-indigo-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        Close
+                    <div>
+                        <label for="registerEmail" class="block text-left text-sm font-medium text-gray-700 mb-1">Email address</label>
+                        <input type="email" id="registerEmail" name="email" required placeholder="Enter your email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div>
+                        <label for="registerPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <input type="password" id="registerPassword" name="password" required placeholder="Create a password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-left text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none transition duration-300">
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md transform hover:scale-105">
+                        Register
+                    </button>
+                    <p id="registrationMessage" class="mt-4 text-center text-sm"></p>
+                </form>
+                <div class="mt-8 text-sm text-gray-600">
+                    Already have an account?
+                    <button id="showLogin" class="font-medium text-indigo-600 hover:text-indigo-500 transition duration-300 focus:outline-none">
+                        Log In
                     </button>
                 </div>
             </div>
@@ -280,555 +84,187 @@
     </div>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('products')) || [
-            { id: 1, name: 'Madhubani Peacock Painting', price: 1200, images: ['Madhubani_panting.jpg'], description: 'A beautiful handmade Madhubani painting of a peacock.', category: 'Madhubani', delivery: 'Free', rating: 4.8 },
-            { id: 2, name: 'Handmade Sikki Basket', price: 750, images: ['sikki _caraft.jpg'], description: 'A traditional basket woven from Sikki grass.', category: 'Sikki', delivery: 'Free', rating: 4.5 }
-        ];
-        let orders = JSON.parse(localStorage.getItem('orders')) || [
-            { id: '#KV89013', customerId: 1, amount: '₹1,500', status: 'Processing', products: ['Madhubani Peacock Painting'], shippingAddress: 'Patna, Bihar', contactNumber: '9876543210' },
-            { id: '#KV89012', customerId: 2, amount: '₹2,500', status: 'Pending', products: ['Handmade Sikki Basket'], shippingAddress: 'Gaya, Bihar', contactNumber: '9123456789' }
-        ];
-        let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [
-            { id: '#KV89011', customerId: 1, amount: '₹1,200', status: 'Shipped', products: ['Product 1'], shippingAddress: 'Sample Address', contactNumber: '1234567890', completedAt: '2025-09-01' }
-        ];
-        let users = JSON.parse(localStorage.getItem('users')) || [
-            { id: 1, username: 'Riya Singh', email: 'riya.singh@example.com', role: 'User' },
-            { id: 2, username: 'Deepak Kumar', email: 'deepak.kumar@example.com', role: 'User' },
-            { id: 3, username: 'Founder', email: 'kundan848113tiwari@gmail.com', role: 'Admin' }
-        ];
-        let editingProductId = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            const authContainer = document.querySelector('.auth-container');
+            const showRegisterBtn = document.getElementById('showRegister');
+            const showLoginBtn = document.getElementById('showLogin');
+            const registerForm = document.getElementById('registerForm');
+            const loginForm = document.getElementById('loginForm');
 
-        const saveProductsToLocalStorage = () => {
-            localStorage.setItem('products', JSON.stringify(products));
-        };
+            const registrationMessage = document.getElementById('registrationMessage');
+            const loginMessage = document.getElementById('loginMessage');
 
-        const saveOrdersToLocalStorage = () => {
-            localStorage.setItem('orders', JSON.stringify(orders));
-        };
-
-        const saveOrderHistoryToLocalStorage = () => {
-            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
-        };
-
-        const saveUsersToLocalStorage = () => {
-            localStorage.setItem('users', JSON.stringify(users));
-        };
-
-        const fetchAdminData = async () => {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
-            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
-            const storedProducts = JSON.parse(localStorage.getItem('products')) || products;
-
-            const totalUsers = storedUsers.length;
-            const pendingOrders = storedOrders.filter(o => o.status === 'Pending').length;
-            const totalProducts = storedProducts.length;
-
-            const recentOrders = storedOrders.slice(0, 4).map(order => {
-                const customer = storedUsers.find(user => user.id === order.customerId);
-                return {
-                    ...order,
-                    customer: customer ? customer.username : 'Unknown User'
-                };
-            });
-
-            return { totalProducts, pendingOrders, totalUsers, recentOrders };
-        };
-
-        const displayAdminData = (data) => {
-            document.getElementById('total-products').textContent = data.totalProducts;
-            document.getElementById('pending-orders').textContent = data.pendingOrders;
-            document.getElementById('total-users').textContent = data.totalUsers;
-
-            const recentOrdersTableBody = document.getElementById('recent-orders-body');
-            if (recentOrdersTableBody) {
-                recentOrdersTableBody.innerHTML = '';
-                data.recentOrders.forEach(order => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b';
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.id}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.customer}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.amount}</td>
-                        <td class="py-2 px-4 text-sm">${order.status}</td>
-                    `;
-                    const statusCell = row.querySelector('td:last-child');
-                    if (order.status === 'Pending') {
-                        statusCell.classList.add('text-red-600');
-                    } else if (order.status === 'Processing') {
-                        statusCell.classList.add('text-yellow-600');
-                    } else if (order.status === 'Shipped') {
-                        statusCell.classList.add('text-green-600');
-                    }
-                    recentOrdersTableBody.appendChild(row);
-                });
-            }
-        };
-
-        const loadAdminDashboard = async () => {
-            const data = await fetchAdminData();
-            displayAdminData(data);
-        };
-
-        const renderOrders = () => {
-            const ordersTableBody = document.getElementById('orders-table-body');
-            const noOrdersMessage = document.getElementById('no-orders-message');
-
-            if (!ordersTableBody) return;
-
-            ordersTableBody.innerHTML = '';
-            
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
-            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
-
-            if (storedOrders.length > 0) {
-                noOrdersMessage.classList.add('hidden');
-                storedOrders.forEach(order => {
-                    const customer = storedUsers.find(user => user.id === order.customerId);
-                    const customerName = customer ? customer.username : 'Unknown User';
-                    const row = document.createElement('tr');
-                    row.className = 'border-b';
-                    const productNames = order.products.join(', ');
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.id}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${customerName}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${productNames}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.amount}</td>
-                        <td class="py-2 px-4 text-sm">
-                            <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
-                        </td>
-                        <td class="py-2 px-4 text-sm text-gray-800 flex items-center space-x-2">
-                            <select data-id="${order.id}" class="status-select bg-gray-200 p-1 rounded">
-                                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                                <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                                <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                                <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                            </select>
-                            <button class="view-details-btn bg-indigo-500 text-white px-3 py-1 rounded-md text-xs hover:bg-indigo-600 transition duration-300" data-id="${order.id}">View Details</button>
-                        </td>
-                    `;
-                    ordersTableBody.appendChild(row);
-                });
-                document.querySelectorAll('.status-select').forEach(select => {
-                    select.addEventListener('change', (e) => {
-                        const orderId = e.target.dataset.id;
-                        const newStatus = e.target.value;
-                        updateOrderStatus(orderId, newStatus);
-                    });
-                });
-                document.querySelectorAll('.view-details-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const orderId = e.target.dataset.id;
-                        viewOrderDetails(orderId);
-                    });
-                });
-            } else {
-                noOrdersMessage.classList.remove('hidden');
-            }
-        };
-
-        const renderOrderHistory = () => {
-            const orderHistoryTableBody = document.getElementById('order-history-table-body');
-            const noHistoryMessage = document.getElementById('no-history-message');
-
-            if (!orderHistoryTableBody) return;
-
-            orderHistoryTableBody.innerHTML = '';
-            
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
-            const storedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || orderHistory;
-
-            if (storedOrderHistory.length > 0) {
-                noHistoryMessage.classList.add('hidden');
-                storedOrderHistory.forEach(order => {
-                    const customer = storedUsers.find(user => user.id === order.customerId);
-                    const customerName = customer ? customer.username : 'Unknown User';
-                    const row = document.createElement('tr');
-                    row.className = 'border-b';
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.id}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${customerName}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.amount}</td>
-                        <td class="py-2 px-4 text-sm">
-                            <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
-                        </td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${order.completedAt}</td>
-                    `;
-                    orderHistoryTableBody.appendChild(row);
-                });
-            } else {
-                noHistoryMessage.classList.remove('hidden');
-            }
-        };
-
-        const renderUsers = () => {
-            const usersTableBody = document.getElementById('users-table-body');
-            const noUsersMessage = document.getElementById('no-users-message');
-            
-            if (!usersTableBody) return;
-
-            usersTableBody.innerHTML = '';
-            
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
-
-            if (storedUsers.length > 0) {
-                noUsersMessage.classList.add('hidden');
-                storedUsers.forEach(user => {
-                    const role = user.isAdmin ? 'Admin' : 'User';
-                    const row = document.createElement('tr');
-                    row.className = 'border-b';
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-sm text-gray-800">${user.username}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${user.email}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${role}</td>
-                    `;
-                    usersTableBody.appendChild(row);
-                });
-            } else {
-                noUsersMessage.classList.remove('hidden');
-            }
-        };
-
-        const viewOrderDetails = (orderId) => {
-            const storedUsers = JSON.parse(localStorage.getItem('users')) || users;
-            const storedOrders = JSON.parse(localStorage.getItem('orders')) || orders;
-            const storedOrderHistory = JSON.parse(localStorage.getItem('orderHistory')) || orderHistory;
-
-            const order = storedOrders.find(o => o.id === orderId) || storedOrderHistory.find(o => o.id === orderId);
-            if (order) {
-                const customer = storedUsers.find(u => u.id === order.customerId);
-                const customerName = customer ? customer.username : 'Unknown User';
-                const modalContent = document.getElementById('modal-content');
-                modalContent.innerHTML = `
-                    <p class="text-sm"><strong>Order ID:</strong> ${order.id}</p>
-                    <p class="text-sm"><strong>Customer:</strong> ${customerName}</p>
-                    <p class="text-sm"><strong>Contact No:</strong> ${order.contactNumber}</p>
-                    <p class="text-sm"><strong>Address:</strong> ${order.shippingAddress}</p>
-                    <p class="text-sm"><strong>Products:</strong> ${order.products.join(', ')}</p>
-                    <p class="text-sm"><strong>Total Amount:</strong> ${order.amount}</p>
-                    <p class="text-sm"><strong>Status:</strong> ${order.status}</p>
-                `;
-                document.getElementById('order-details-modal').classList.remove('hidden');
-            }
-        };
-
-        const updateOrderStatus = (orderId, newStatus) => {
-            const orderIndex = orders.findIndex(o => o.id === orderId);
-            if (orderIndex !== -1) {
-                const orderToUpdate = orders[orderIndex];
-                orderToUpdate.status = newStatus;
-                
-                if (newStatus === 'Delivered' || newStatus === 'Cancelled') {
-                    orderToUpdate.completedAt = new Date().toISOString().slice(0, 10);
-                    orderHistory.push(orderToUpdate);
-                    orders.splice(orderIndex, 1);
-                    saveOrderHistoryToLocalStorage();
-                }
-
-                saveOrdersToLocalStorage();
-                loadAdminDashboard();
-                renderOrders();
-                renderOrderHistory();
-            }
-        };
-
-        const renderProducts = () => {
-            const productTableBody = document.getElementById('product-table-body');
-            if (productTableBody) {
-                productTableBody.innerHTML = '';
-                const storedProducts = JSON.parse(localStorage.getItem('products')) || products;
-                products.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b';
-                    row.innerHTML = `
-                        <td class="py-2 px-4 text-sm text-gray-800">${product.name}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">₹${product.price}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">${product.category}</td>
-                        <td class="py-2 px-4 text-sm text-gray-800">
-                            <button data-id="${product.id}" class="edit-btn text-indigo-600 hover:text-indigo-800 mr-2">Edit</button>
-                            <button data-id="${product.id}" class="delete-btn text-red-600 hover:text-red-800">Delete</button>
-                        </td>
-                    `;
-                    productTableBody.appendChild(row);
-                });
-
-                document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const id = parseInt(e.target.dataset.id);
-                        editProduct(id);
-                    });
-                });
-
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const id = parseInt(e.target.dataset.id);
-                        deleteProduct(id);
-                    });
-                });
-            }
-        };
-
-        const editProduct = (id) => {
-            const product = products.find(p => p.id === id);
-            if (product) {
-                editingProductId = id;
-                document.getElementById('product-name').value = product.name;
-                document.getElementById('product-price').value = product.price;
-                document.getElementById('product-category').value = product.category;
-                document.getElementById('product-delivery').value = product.delivery;
-                
-                const imagePreviewContainer = document.getElementById('image-preview');
-                imagePreviewContainer.innerHTML = '';
-                if (product.images && product.images.length > 0) {
-                    product.images.forEach(imgUrl => {
-                        const mediaElement = imgUrl.startsWith('data:video') ? document.createElement('video') : document.createElement('img');
-                        mediaElement.src = imgUrl;
-                        mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
-                        if (imgUrl.startsWith('data:video')) mediaElement.controls = true;
-                        imagePreviewContainer.appendChild(mediaElement);
-                    });
-                }
-                
-                document.getElementById('product-description').value = product.description;
-                document.getElementById('product-form-container').classList.remove('hidden');
-                document.getElementById('product-list-container').classList.add('hidden');
-            }
-        };
-
-        const deleteProduct = (id) => {
-            products = products.filter(p => p.id !== id);
-            saveProductsToLocalStorage();
-            renderProducts();
-            loadAdminDashboard();
-        };
-        
-        const saveProduct = (e) => {
-            e.preventDefault();
-            const name = document.getElementById('product-name').value;
-            const price = parseFloat(document.getElementById('product-price').value);
-            const category = document.getElementById('product-category').value;
-            const delivery = document.getElementById('product-delivery').value;
-            const description = document.getElementById('product-description').value;
-
-            const files = document.getElementById('product-images').files;
-            
-            let fileUrls = [];
-
-            if (files.length > 0) {
-                fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
-                finalizeSave(fileUrls, name, price, category, delivery, description);
-            } else {
-                let existingImages = [];
-                if (editingProductId !== null) {
-                    const productToEdit = products.find(p => p.id === editingProductId);
-                    if (productToEdit) {
-                        existingImages = productToEdit.images;
-                    }
-                }
-                finalizeSave(existingImages, name, price, category, delivery, description);
-            }
-        };
-        
-        const finalizeSave = (images, name, price, category, delivery, description) => {
-            if (editingProductId !== null) {
-                const productIndex = products.findIndex(p => p.id === editingProductId);
-                if (productIndex !== -1) {
-                    products[productIndex] = { 
-                        id: editingProductId, 
-                        name: name, 
-                        price: price, 
-                        images: images, 
-                        description: description, 
-                        category: category, 
-                        delivery: delivery, 
-                        rating: products[productIndex].rating 
-                    };
-                }
-            } else {
-                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ 
-                    id: newId, 
-                    name: name, 
-                    price: price, 
-                    images: images, 
-                    description: description, 
-                    category: category, 
-                    delivery: delivery, 
-                    rating: 4.5 
-                });
-            }
-            
-            saveProductsToLocalStorage();
-            
-            editingProductId = null;
-            document.getElementById('product-form').reset();
-            document.getElementById('product-form-container').classList.add('hidden');
-            document.getElementById('product-list-container').classList.remove('hidden');
-            
-            renderProducts();
-            loadAdminDashboard();
-            document.getElementById('product-message').textContent = 'Product saved successfully!';
-            document.getElementById('product-message').classList.add('text-green-600');
-            setTimeout(() => document.getElementById('product-message').textContent = '', 3000);
-        };
-
-        const checkAdminStatus = () => {
-            const authToken = localStorage.getItem('authToken');
-            const currentUser = localStorage.getItem('currentUser');
-            let isAdmin = false;
-            let loggedInEmail = '';
-            
-            if (authToken && currentUser) {
-                try {
-                    const user = JSON.parse(currentUser);
-                    isAdmin = user.isAdmin === true;
-                    loggedInEmail = user.email;
-                    document.getElementById('admin-name').textContent = `नमस्ते, ${user.username}`;
-                } catch (e) {
-                    console.error("Error parsing user data:", e);
+            function displayMessage(element, message, isSuccess) {
+                if (element) {
+                    element.textContent = message;
+                    element.className = `mt-4 text-center text-sm ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+                } else {
+                    console.warn(`Message element with ID '${element ? element.id : 'unknown'}' not found: ${message}`);
                 }
             }
 
-            if (isAdmin) {
-                loadAdminDashboard();
-                if (loggedInEmail === 'kundan848113tiwari@gmail.com') {
-                    document.getElementById('add-admin-link').classList.remove('hidden');
-                }
-            } else {
-                alert('Access Denied. Please log in as an administrator.');
-                window.location.href = '/login_ui.html'; 
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('form') === 'register') {
+                authContainer.classList.add('flipped');
             }
-        };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.location.href.includes('admin.html')) {
-                checkAdminStatus();
-            }
-            renderProducts();
-            
-            const addProductBtn = document.getElementById('add-product-btn');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            const productForm = document.getElementById('product-form');
-            const productImagesInput = document.getElementById('product-images');
-            const imagePreviewContainer = document.getElementById('image-preview');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => {
-                    document.getElementById('order-details-modal').classList.add('hidden');
+            if (showRegisterBtn) {
+                showRegisterBtn.addEventListener('click', () => {
+                    authContainer.classList.add('flipped');
+                    displayMessage(registrationMessage, '', true); 
+                    displayMessage(loginMessage, '', true); 
                 });
             }
 
-            if (productImagesInput) {
-                productImagesInput.addEventListener('change', (e) => {
-                    imagePreviewContainer.innerHTML = '';
-                    for (const file of e.target.files) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            const mediaElement = file.type.startsWith('video') ? document.createElement('video') : document.createElement('img');
-                            mediaElement.src = event.target.result;
-                            mediaElement.className = 'w-24 h-24 object-cover rounded-md border';
-                            if (file.type.startsWith('video')) mediaElement.controls = true;
-                            imagePreviewContainer.appendChild(mediaElement);
-                        };
-                        reader.readAsDataURL(file);
-                    }
+            if (showLoginBtn) {
+                showLoginBtn.addEventListener('click', () => {
+                    authContainer.classList.remove('flipped');
+                    displayMessage(registrationMessage, '', true); 
+                    displayMessage(loginMessage, '', true); 
                 });
             }
-            
-            if (addProductBtn) {
-                addProductBtn.addEventListener('click', () => {
-                    editingProductId = null;
-                    document.getElementById('product-form').reset();
-                    imagePreviewContainer.innerHTML = '';
-                    document.getElementById('product-form-container').classList.remove('hidden');
-                    document.getElementById('product-list-container').classList.add('hidden');
-                });
-            }
-            if (cancelEditBtn) {
-                cancelEditBtn.addEventListener('click', () => {
-                    editingProductId = null;
-                    document.getElementById('product-form').reset();
-                    imagePreviewContainer.innerHTML = '';
-                    document.getElementById('product-form-container').classList.add('hidden');
-                    document.getElementById('product-list-container').classList.remove('hidden');
-                });
-            }
-            if (productForm) {
-                productForm.addEventListener('submit', saveProduct);
-            }
-        });
-        
-        const logoutButton = document.getElementById('logout-button');
-        if(logoutButton) {
-            logoutButton.addEventListener('click', () => {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('currentUser');
-                window.location.href = '/login_ui.html';
-            });
-        }
 
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = {
-            '#dashboard-section': document.getElementById('dashboard-section'),
-            '#products-section': document.getElementById('products-section'),
-            '#orders-section': document.getElementById('orders-section'),
-            '#order-history-section': document.getElementById('order-history-section'),
-            '#users-section': document.getElementById('users-section'),
-            '#analytics-section': document.getElementById('analytics-section'),
-            '#add-admin-section': document.getElementById('add-admin-section')
-        };
-        const mainTitle = document.getElementById('main-title');
-        const mobileNavToggle = document.getElementById('mobile-nav-toggle');
-        const adminSidebar = document.getElementById('admin-sidebar');
-
-        if (mobileNavToggle) {
-            mobileNavToggle.addEventListener('click', () => {
-                adminSidebar.classList.toggle('hidden');
-                document.querySelector('main').classList.toggle('md:ml-64');
-            });
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const targetId = e.target.getAttribute('href');
-                if (sections[targetId]) {
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    for (const id in sections) {
-                        sections[id].classList.add('hidden');
+
+                    const username = document.getElementById('registerUsername').value;
+                    const email = document.getElementById('registerEmail').value;
+                    const password = document.getElementById('registerPassword').value;
+                    const confirmPassword = document.getElementById('confirmPassword').value;
+
+                    if (password !== confirmPassword) {
+                        displayMessage(registrationMessage, "Passwords do not match! Please check again.", false);
+                        return; 
                     }
-                    sections[targetId].classList.remove('hidden');
-                    mainTitle.textContent = e.target.textContent.trim();
-                    if (targetId === '#products-section') {
-                         renderProducts();
-                    } else if (targetId === '#orders-section') {
-                        renderOrders();
-                    } else if (targetId === '#order-history-section') {
-                        renderOrderHistory();
-                    } else if (targetId === '#users-section') {
-                        renderUsers();
+
+                    if (password.length < 6) { 
+                        displayMessage(registrationMessage, "Password must be at least 6 characters long.", false);
+                        return; 
                     }
-                }
-            });
+                    
+                    displayMessage(registrationMessage, '', true);
+
+                    try {
+                        const response = await fetch('/.netlify/functions/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ username, email, password }),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            displayMessage(registrationMessage, result.message || 'Registration successful!', true);
+                            
+                            localStorage.setItem('authToken', result.token);
+                            
+                            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+                            const newUserId = storedUsers.length > 0 ? Math.max(...storedUsers.map(u => u.id)) + 1 : 1;
+                            const userWithRole = { ...result.user, id: newUserId, isAdmin: false, role: 'User' };
+                            storedUsers.push(userWithRole);
+                            localStorage.setItem('users', JSON.stringify(storedUsers));
+                            localStorage.setItem('currentUser', JSON.stringify(userWithRole));
+
+                            registerForm.reset(); 
+                            setTimeout(() => authContainer.classList.remove('flipped'), 2000); 
+                            setTimeout(() => {
+                                displayMessage(registrationMessage, '', true);
+                                if (localStorage.getItem('authToken')) {
+                                    window.location.href = "/"; 
+                                }
+                            }, 3000); 
+
+                        } else {
+                            const errorMessage = result.message || 'Registration failed due to an unknown error.';
+                            displayMessage(registrationMessage, errorMessage, false);
+                        }
+                    } catch (error) {
+                        console.error('Network or server error during registration:', error);
+                        displayMessage(registrationMessage, 'Could not connect to the server. Please try again.', false);
+                    }
+                });
+            }
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+
+                    if (!email || !password) {
+                        displayMessage(loginMessage, "Email and password are required for login.", false);
+                        return;
+                    }
+
+                    displayMessage(loginMessage, '', true);
+
+                    try {
+                        const response = await fetch('/.netlify/functions/login', { 
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ email, password }),
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            displayMessage(loginMessage, result.message || 'Login successful!', true);
+                            
+                            localStorage.setItem('authToken', result.token);
+                            
+                            const userIsAdmin = (email === 'kundan848113tiwari@gmail.com' && password === 'admin@123prince');
+                            const userWithRole = { ...result.user, isAdmin: userIsAdmin, username: userIsAdmin ? 'Founder' : result.user.username };
+                            
+                            const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+                            let existingUser = storedUsers.find(u => u.email === userWithRole.email);
+
+                            if (existingUser) {
+                                existingUser.isAdmin = userIsAdmin;
+                                existingUser.role = userIsAdmin ? 'Admin' : 'User';
+                                
+                                const userIndex = storedUsers.findIndex(u => u.email === existingUser.email);
+                                if (userIndex !== -1) {
+                                    storedUsers[userIndex] = existingUser;
+                                }
+
+                                localStorage.setItem('users', JSON.stringify(storedUsers));
+                                localStorage.setItem('currentUser', JSON.stringify(existingUser));
+
+                            } else {
+                                const newUserId = storedUsers.length > 0 ? Math.max(...storedUsers.map(u => u.id)) + 1 : 1;
+                                const newUser = { ...userWithRole, id: newUserId, role: userIsAdmin ? 'Admin' : 'User' };
+                                storedUsers.push(newUser);
+                                localStorage.setItem('users', JSON.stringify(storedUsers));
+                                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                            }
+
+                            loginForm.reset(); 
+
+                            setTimeout(() => {
+                                if (userWithRole.isAdmin) {
+                                    window.location.replace("/admin.html");
+                                } else {
+                                    window.location.replace("/");
+                                }
+                            }, 1500); 
+
+                        } else {
+                            const errorMessage = result.message || 'Login failed due to an unknown error.';
+                            displayMessage(loginMessage, errorMessage, false);
+                        }
+                    } catch (error) {
+                        console.error('Network or server error during login:', error);
+                        displayMessage(loginMessage, 'Could not connect to the server. Please try again.', false);
+                    }
+                });
+            }
         });
-
-        const addAdminForm = document.getElementById('add-admin-form');
-        const adminMessage = document.getElementById('admin-message');
-
-        if (addAdminForm) {
-            addAdminForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const newAdminEmail = document.getElementById('new-admin-email').value;
-                const newAdminPassword = document.getElementById('new-admin-password').value;
-
-                console.log(`Creating new admin with email: ${newAdminEmail} and password: ${newAdminPassword}`);
-
-                adminMessage.textContent = 'New admin account created successfully (placeholder)!';
-                adminMessage.classList.remove('text-red-600');
-                adminMessage.classList.add('text-green-600');
-                addAdminForm.reset();
-            });
-        }
     </script>
 </body>
 </html>
